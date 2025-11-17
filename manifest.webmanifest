@@ -1,0 +1,13 @@
+{
+  "name": "TopItUp",
+  "short_name": "TopItUp",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0a0a0a",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "files/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "files/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
