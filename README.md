@@ -1,6 +1,3 @@
-## **README.md**
-
-```markdown
 # 🍻 TopItUp v2 - El Contador Supremo
 
 ### _Porque alguien tiene que llevar la cuenta de tus cubatas_
@@ -19,13 +16,11 @@ Una app para contar **literalmente lo que te dé la gana**. Cervezas, cafés, fl
 - 🏆 **Leaderboard** para competir con tus colegas (si te atreves)
 - 📈 **Historial** para ver cuándo te pasaste de rosca
 
----
-
 ## 🌐 Pruébalo (temporalmente)
 
-**👉 [https://pi.enekoalvarez.com/topitup/](https://pi.enekoalvarez.com/topitup/)**
+👉 **[https://pi.enekoalvarez.com/topitup/](https://pi.enekoalvarez.com/topitup/)**
 
----
+> ⚠️ Esto vive en una Raspberry Pi, así que ten piedad
 
 ## 🎮 Cómo usarlo
 
@@ -35,8 +30,6 @@ Una app para contar **literalmente lo que te dé la gana**. Cervezas, cafés, fl
 4. Haz clic en cualquier tarjeta para **incrementar**
 5. Compite en el **Leaderboard** (solo contadores públicos)
 
----
-
 ## 🛠️ Tech Stack
 
 - PHP (sin frameworks porque somos old school)
@@ -45,13 +38,9 @@ Una app para contar **literalmente lo que te dé la gana**. Cervezas, cafés, fl
 - CSS puro (flexbox y grid como debe ser)
 - Shepherd.js (para el tour que nadie lee)
 
----
-
 ## 📱 PWA Ready
 
 Añade un acceso directo a tu móvil y úsalo como app nativa. La barra de navegación desaparece porque **esto es serio**.
-
----
 
 ## 🔮 Próximamente (o no)
 
@@ -59,8 +48,6 @@ Añade un acceso directo a tu móvil y úsalo como app nativa. La barra de naveg
 - Gráficos bonitos
 - Exportar datos (*soy eneko, chati se cree que esto va a llegar a elon musk o que jajajaj*)
 - _Tu idea aquí_ 👀
-
----
 
 ## 🍺 Fun Fact
 
@@ -71,4 +58,3 @@ Este proyecto nació de la necesidad de saber cuantos cubatas caen en un año. A
 **Hecho con ☕ y 🍺 en 2025**
 
 _Versión actual: 2.0 (ahora con grupos!)_
-```
