@@ -672,7 +672,7 @@ body {
     padding: 20px;
 }
 
-.privacy-tag {
+.leaderboard-indicator {
     display: inline-block;
     width: 10px;
     height: 10px;
@@ -680,16 +680,13 @@ body {
     margin-left: 8px;
     position: relative;
     vertical-align: middle;
+    background: #ccc;
+    box-shadow: 0 0 0 2px rgba(204, 204, 204, 0.2);
 }
 
-.privacy-tag.public {
+.leaderboard-indicator.active {
     background: #28a745;
     box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
-}
-
-.privacy-tag.private {
-    background: #dc3545;
-    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
 }
 
 .leaderboard-page {

@@ -1,5 +1,8 @@
 <?php
-session_start();
+// Only start session if not already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'config.php';
 
 if (!isset($_SESSION["userid"])) {

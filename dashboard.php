@@ -6,7 +6,7 @@ require 'check_session.php';
 
 $user_id = $_SESSION['userid'];
 $page = $_GET['page'] ?? 'dashboard';
-$allowed_pages = ['dashboard', 'increment', 'leaderboard', 'settings'];
+$allowed_pages = ['dashboard', 'increment', 'leaderboard', 'leaderboard_view', 'leaderboard_settings', 'settings'];
 
 if (!in_array($page, $allowed_pages)) {
     $page = 'dashboard';
@@ -104,7 +104,7 @@ try {
                     <i class="fas fa-home"></i> Dashboard
                 </a>
                 <a href="?page=settings" class="<?= $page === 'settings' ? 'active' : '' ?>" id="nav-settings">
-                    <i class="fas fa-cog"></i> Ajustes
+                    <i class="fas fa-cog"></i> Settings
                 </a>
             </nav>
         </div>
@@ -120,7 +120,7 @@ try {
             </a>
             <a href="?page=settings" class="<?= $page === 'settings' ? 'active' : '' ?>" id="mobile-nav-settings">
                 <i class="fas fa-cog"></i>
-                Ajustes
+                Settings
             </a>
         </div>
 
@@ -130,7 +130,7 @@ try {
             if (file_exists($page_file)) {
                 include $page_file;
             } else {
-                echo "<p>Página no encontrada.</p>";
+                echo "<p>Page not found.</p>";
             }
             ?>
         </div>
@@ -161,7 +161,7 @@ try {
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js"></script>
-    <script src="js/tour.js?v=1.2.1"></script>
+    <script src="js/tour.js?v=1.4.1"></script>
     <script>
         <?php if ($firstLogin == 1): ?>
         const currentPage = '<?= $page ?>';

@@ -20,182 +20,169 @@ function initTour(currentPage, tourStep) {
     if (currentPage === 'dashboard' && tourStep === 0) {
         tour.addStep({
             id: 'welcome',
-            title: 'Bienvenido a TopItUp v2! 🎉',
-            text: 'Esta es tu página principal. Te voy a dar la chapa un poco rapido para que no te me pierdas y todo tuyo. (son 7 pasos chill)',
+            title: 'Bienvenido a TopItUp! 🎉',
+            text: 'Buenas! Esta app va de contar cosas. Lo que quieras: cubatas, días de gym, libros... lo que sea. Te cuento rápido cómo va. (6 pasitos y listo)',
             buttons: [{
-                text: 'Empezar Tour',
-                action: function() {
+                text: 'Dale, empezamos',
+                action: function () {
                     window.location.href = '?page=dashboard&tour_step=1';
                 }
             }]
         });
     }
 
-    // PASO 1: Grupos y contadores (Dashboard)
+    // PASO 1: Permiso de ubicación (Dashboard)
     if (currentPage === 'dashboard' && tourStep === 1) {
         tour.addStep({
+            id: 'location-permission',
+            title: '📍 Ubicación (opcional)',
+            text: 'TopItUp puede guardar dónde haces cada +1 para futuras estadísticas y mapas molones.<br><br>El navegador te va a pedir permiso. Si quieres, acepta "Siempre permitir" y listo.',
+            buttons: [{
+                text: 'Entendido',
+                action: function () {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                console.log('Location permission granted:', position.coords);
+                                window.location.href = '?page=dashboard&tour_step=2';
+                            },
+                            (error) => {
+                                console.log('Location permission denied or error:', error);
+                                window.location.href = '?page=dashboard&tour_step=2';
+                            },
+                            {
+                                enableHighAccuracy: false,
+                                timeout: 30000,
+                                maximumAge: 0
+                            }
+                        );
+                    } else {
+                        window.location.href = '?page=dashboard&tour_step=2';
+                    }
+                }
+            }]
+        });
+    }
+
+    // PASO 2: Dashboard principal
+    if (currentPage === 'dashboard' && tourStep === 2) {
+        tour.addStep({
             id: 'groups-counters',
-            title: 'Tus Contadores 🎯',
-            text: 'Nombre - valor. Sueltos o en <strong>grupo</strong> (ej: Cubatas -> Roncola, Gintonic), simple.',
+            title: '🏠 Tu Dashboard',
+            text: 'Aquí verás tus <strong>grupos</strong> y <strong>contadores</strong>.<br><br>Un grupo agrupa contadores (ej: "Cubatas" con Roncola, Gintonic...). También puedes tener contadores sueltos.',
             attachTo: {
                 element: '.groups-grid',
                 on: 'top'
             },
             buttons: [{
                 text: 'Siguiente',
-                action: function() {
-                    window.location.href = '?page=dashboard&tour_step=2';
+                action: function () {
+                    window.location.href = '?page=dashboard&tour_step=3';
                 }
             }]
         });
     }
 
-    // PASO 2: C�mo incrementar (Dashboard)
-    if (currentPage === 'dashboard' && tourStep === 2) {
+    // PASO 3: Cómo incrementar
+    if (currentPage === 'dashboard' && tourStep === 3) {
         tour.addStep({
             id: 'how-to-increment',
-            title: 'Incrementar Contadores',
-            text: 'Haciendo <strong>clic en cualquier tarjeta</strong> se abre la página de incremento. Busca el contador y revienta el +1!',
+            title: '+1 +1 +1 🔥',
+            text: 'Toca cualquier tarjeta para entrar y darle caña al <strong>+1</strong>. Así de fácil.',
             attachTo: {
                 element: '.group-card:first-child',
                 on: 'bottom'
             },
             buttons: [{
                 text: 'Siguiente',
-                action: function() {
-                    window.location.href = '?page=settings&tour_step=3';
-                }
-            }]
-        });
-    }
-
-    // PASO 3.5: Crear contadores (Settings)
-    if (currentPage === 'settings' && tourStep === 3) {
-        tour.addStep({
-            id: 'settings-create',
-            title: '⚙️ Crear Contadores',
-            text: 'Aquí se crean los contadores. No confundamos grupos por contadores 🙏. Fíjate en la opción de público, pa\' despues :)',
-            attachTo: {
-                element: '.settings-section:first-child',
-                on: 'bottom'
-            },
-            buttons: [{
-                text: 'Siguiente',
-                action: function() {
+                action: function () {
                     window.location.href = '?page=settings&tour_step=4';
                 }
             }]
         });
     }
 
-    // PASO 3: Crear grupos (Settings)
+    // PASO 4: Settings - Crear contadores y grupos
     if (currentPage === 'settings' && tourStep === 4) {
         tour.addStep({
             id: 'settings-create',
-            title: '⚙️ Crear Grupos',
-            text: 'Aquí puedes crear nuevos <strong>grupos</strong>, que contendrán contadores.',
+            title: '⚙️ Settings',
+            text: 'Aquí creas tus <strong>contadores</strong> y <strong>grupos</strong>.<br><br>Crea un grupo, y luego desde "My Groups" le añades contadores. Easy.',
             attachTo: {
-                element: '.settings-section:nth-child(2)',
+                element: '.settings-section:first-child',
                 on: 'bottom'
             },
             buttons: [{
                 text: 'Siguiente',
-                action: function() {
-                    window.location.href = '?page=leaderboard&tour_step=6';
-                }
-            }]
-        });
-    }
-
-    // PASO 4: Gestionar grupos (Settings)
-    if (currentPage === 'settings' && tourStep === 5) {
-        tour.addStep({
-            id: 'settings-manage',
-            title: '?? Gestionar Grupos',
-            text: 'Aquí iras viendo los grupos qie tengas con.',
-            attachTo: {
-                element: '.settings-section:nth-child(3)',
-                on: 'top'
-            },
-            buttons: [{
-                text: 'Anterior',
-                action: function() {
-                    window.location.href = '?page=settings&tour_step=3';
-                }
-            }, {
-                text: 'Siguiente',
-                action: function() {
-                    window.location.href = '?page=leaderboard&tour_step=6';
+                action: function () {
+                    window.location.href = '?page=leaderboard&tour_step=5';
                 }
             }]
         });
     }
 
     // PASO 5: Leaderboard
-    if (currentPage === 'leaderboard' && tourStep === 6) {
-        const hasLeaderboard = document.querySelector('.leaderboard-table');
+    if (currentPage === 'leaderboard' && tourStep === 5) {
         tour.addStep({
-            id: 'leaderboard-compete',
-            title: '📈 Compite con Otros',
-            text: 'Solo los grupos <strong>públicos</strong> aparecen aquí. Compara tus números con otros usuarios y sube en el ranking.',
+            id: 'leaderboard-intro',
+            title: '🏆 Leaderboards',
+            text: 'Aquí viene lo bueno. Crea <strong>leaderboards privados</strong> con código de invitación para competir con tus colegas.<br><br>Cada uno elige qué contador o grupo quiere trackear y se comparan los +1 de todos.',
             attachTo: {
-                element: '.leaderboard-table',
+                element: '.leaderboard-page',
                 on: 'top'
             },
             buttons: [{
-                text: 'Finalizar Tour',
-                action: function() {
-                    window.location.href = '?page=dashboard&tour_step=7';
+                text: 'Siguiente',
+                action: function () {
+                    window.location.href = '?page=dashboard&tour_step=6';
                 }
             }]
         });
     }
 
-    // PASO 6: Historial final (Dashboard)
-    if (currentPage === 'dashboard' && tourStep === 7) {
+    // PASO 6: Historial y despedida
+    if (currentPage === 'dashboard' && tourStep === 6) {
         tour.addStep({
             id: 'dashboard-history',
-            title: 'Historial de Actividad',
-            text: 'A veces, entre cubata y cubata, se te olvida lo que has hecho. Aquí tienes un resumen de tus últimas acciones. De nada.',
+            title: 'Y eso es todo! 🙌',
+            text: 'Ahí abajo tienes el <strong>historial</strong> por si se te olvida algo entre cubata y cubata.<br><br>Ahora a darle caña. ¡Suerte compitiendo!',
             attachTo: {
                 element: '.history-section',
                 on: 'top'
             },
             buttons: [{
-                text: 'Empezar a contar!',
-                action: function() {
-                    console.log('Intentando completar tour...');
-                    
-                    fetch('mark_tour_complete.php', { 
+                text: 'A topar! 🚀',
+                action: function () {
+                    console.log('Completando tour...');
+
+                    fetch('mark_tour_complete.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         }
                     })
-                    .then(response => {
-                        console.log('Respuesta recibida:', response);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Datos del tour:', data);
-                        
-                        if (data.success) {
-                            document.body.classList.remove('tour-active');
-                            tour.complete();
-                            setTimeout(() => {
+                        .then(response => {
+                            console.log('Respuesta recibida:', response);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Tour completado:', data);
+
+                            if (data.success) {
+                                document.body.classList.remove('tour-active');
+                                tour.complete();
+                                setTimeout(() => {
+                                    window.location.href = '?page=dashboard';
+                                }, 500);
+                            } else {
+                                console.error('Error al completar el tour:', data);
                                 window.location.href = '?page=dashboard';
-                            }, 500);
-                        } else {
-                            console.error('Error al completar el tour:', data);
-                            alert('Error al completar el tour. Recargando p�gina...');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error en la petición:', error);
                             window.location.href = '?page=dashboard';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error en la petición:', error);
-                        alert('Error de conexión. Recargando página...');
-                        window.location.href = '?page=dashboard';
-                    });
+                        });
                 }
             }]
         });

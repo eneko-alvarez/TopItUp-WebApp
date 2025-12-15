@@ -27,11 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($action === 'create_counter') {
         $name = trim($_POST['name'] ?? '');
         $color = $_POST['color'] ?? '#667eea';
-        $is_public = isset($_POST['is_public']) ? 1 : 0;
         
         if ($name) {
-            $stmt = $pdo->prepare("INSERT INTO counters (user_id, name, color, is_public) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$user_id, $name, $color, $is_public]);
+            $stmt = $pdo->prepare("INSERT INTO counters (user_id, name, color, is_public) VALUES (?, ?, ?, 1)");
+            $stmt->execute([$user_id, $name, $color]);
         }
         header('Location: dashboard.php?page=settings');
         exit;
@@ -45,13 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
     
-    if ($action === 'toggle_counter_visibility') {
-        $counter_id = $_POST['counter_id'] ?? 0;
-        $stmt = $pdo->prepare("UPDATE counters SET is_public = NOT is_public WHERE id = ? AND user_id = ?");
-        $stmt->execute([$counter_id, $user_id]);
-        header('Location: dashboard.php?page=settings');
-        exit;
-    }
+
     
     if ($action === 'assign_counter') {
         $counter_id = $_POST['counter_id'] ?? 0;
@@ -95,46 +88,42 @@ foreach ($groups as $group) {
 
 <div class="settings-page">
     <div class="settings-section">
-        <h3><i class="fas fa-plus-square"></i> Crear Contador</h3>
+        <h3><i class="fas fa-plus-square"></i> Create Counter</h3>
         <form method="POST" class="settings-form">
             <input type="hidden" name="action" value="create_counter">
             <div class="form-group">
-                <label for="counter_name">Nombre del Contador:</label>
-                <input type="text" id="counter_name" name="name" required placeholder="ej: Roncola">
+                <label for="counter_name">Counter Name:</label>
+                <input type="text" id="counter_name" name="name" required placeholder="e.g.: Gym Sessions">
             </div>
             <div class="form-group">
                 <label for="counter_color">Color:</label>
                 <input type="color" id="counter_color" name="color" value="#667eea" class="color-picker">
             </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" name="is_public" checked> Público (visible en leaderboard)
-                </label>
-            </div>
-            <button type="submit" class="btn-primary">Crear Contador</button>
+
+            <button type="submit" class="btn-primary">Create Counter</button>
         </form>
     </div>
 
     <div class="settings-section">
-        <h3><i class="fas fa-layer-group"></i> Crear Nuevo Grupo</h3>
+        <h3><i class="fas fa-layer-group"></i> Create New Group</h3>
         <form method="POST" class="settings-form">
             <input type="hidden" name="action" value="create_group">
             <div class="form-group">
-                <label for="group_name">Nombre del Grupo:</label>
-                <input type="text" id="group_name" name="name" required placeholder="ej: Cubatas">
+                <label for="group_name">Group Name:</label>
+                <input type="text" id="group_name" name="name" required placeholder="e.g.: Drinks">
             </div>
             <div class="form-group">
                 <label for="group_color">Color:</label>
                 <input type="color" id="group_color" name="color" value="#667eea" class="color-picker">
             </div>
-            <button type="submit" class="btn-primary">Crear Grupo</button>
+            <button type="submit" class="btn-primary">Create Group</button>
         </form>
     </div>
     
     <div class="settings-section">
-        <h3><i class="fas fa-tasks"></i> Mis Grupos</h3>
+        <h3><i class="fas fa-tasks"></i> My Groups</h3>
         <?php if (empty($groupsWithCounters)): ?>
-            <p class="empty-message">No tienes grupos creados.</p>
+            <p class="empty-message">You have no groups created.</p>
         <?php else: ?>
             <?php foreach ($groupsWithCounters as $data): ?>
                 <div class="group-management-card">
@@ -148,8 +137,8 @@ foreach ($groups as $group) {
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete_group">
                                 <input type="hidden" name="group_id" value="<?= $data['group']['id'] ?>">
-                                <button type="submit" class="btn-danger" onclick="return confirm('¿Eliminar grupo? Los contadores se mantendrán.')">
-                                    <i class="fas fa-trash"></i> Eliminar
+                                <button type="submit" class="btn-danger" onclick="return confirm('Delete group? Counters will be kept.')">
+                                    <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>
                         </div>
@@ -164,16 +153,15 @@ foreach ($groups as $group) {
                                             <?= htmlspecialchars($counter['name']) ?> 
                                             <span style="color: #999; font-weight: normal;">(<?= $counter['count'] ?>)</span>
                                         </span>
-                                        <span class="privacy-tag <?= $counter['is_public'] ? 'public' : 'private' ?>"></span>
+                                        <?php
+                                        // Check if counter is in any leaderboard
+                                        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM leaderboard_members WHERE counter_id = ?");
+                                        $stmt_check->execute([$counter['id']]);
+                                        $in_leaderboard = $stmt_check->fetchColumn() > 0;
+                                        ?>
+                                        <span class="leaderboard-indicator <?= $in_leaderboard ? 'active' : '' ?>" title="<?= $in_leaderboard ? 'In leaderboard' : 'Not in leaderboard' ?>"></span>
                                     </div>
                                     <div style="display: flex; gap: 5px;">
-                                        <form method="POST" style="display: inline;">
-                                            <input type="hidden" name="action" value="toggle_counter_visibility">
-                                            <input type="hidden" name="counter_id" value="<?= $counter['id'] ?>">
-                                            <button type="submit" class="btn-small-toggle">
-                                                <i class="fas fa-eye<?= $counter['is_public'] ? '-slash' : '' ?>"></i>
-                                            </button>
-                                        </form>
                                         <form method="POST" style="display: inline;">
                                             <input type="hidden" name="action" value="unassign_counter">
                                             <input type="hidden" name="group_counter_id" value="<?= $counter['group_counter_id'] ?>">
@@ -186,49 +174,39 @@ foreach ($groups as $group) {
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <p class="empty-group-counters">Sin contadores asignados</p>
+                        <p class="empty-group-counters">No counters assigned</p>
+                    <?php endif; ?>
+                    
+                    <!-- Add Counter Form for this specific group -->
+                    <?php if (!empty($unassignedCounters)): ?>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                            <form method="POST" style="display: flex; gap: 10px; align-items: center;">
+                                <input type="hidden" name="action" value="assign_counter">
+                                <input type="hidden" name="group_id" value="<?= $data['group']['id'] ?>">
+                                <select name="counter_id" required style="flex: 1; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; font-size: 14px;">
+                                    <option value="">+ Add Counter</option>
+                                    <?php foreach ($unassignedCounters as $counter): ?>
+                                        <option value="<?= $counter['id'] ?>">
+                                            <?= htmlspecialchars($counter['name']) ?> (<?= $counter['count'] ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="submit" class="btn-primary" style="padding: 8px 16px; white-space: nowrap;">
+                                    <i class="fas fa-plus"></i> Add
+                                </button>
+                            </form>
+                        </div>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
     
-    <?php if (!empty($unassignedCounters) && !empty($groups)): ?>
-        <div class="settings-section">
-            <h3><i class="fas fa-link"></i> Asignar Contadores a Grupos</h3>
-            <form method="POST" class="settings-form">
-                <input type="hidden" name="action" value="assign_counter">
-                <div class="form-group">
-                    <label for="assign_counter">Contador:</label>
-                    <select id="assign_counter" name="counter_id" required>
-                        <option value="">Selecciona un contador</option>
-                        <?php foreach ($unassignedCounters as $counter): ?>
-                            <option value="<?= $counter['id'] ?>">
-                                <?= htmlspecialchars($counter['name']) ?> (<?= $counter['count'] ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="assign_group">Grupo:</label>
-                    <select id="assign_group" name="group_id" required>
-                        <option value="">Selecciona un grupo</option>
-                        <?php foreach ($groups as $group): ?>
-                            <option value="<?= $group['id'] ?>">
-                                <?= htmlspecialchars($group['name']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <button type="submit" class="btn-primary">Asignar</button>
-            </form>
-        </div>
-    <?php endif; ?>
     
     <div class="settings-section">
-        <h3><i class="fas fa-unlink"></i> Contadores Sin Asignar</h3>
+        <h3><i class="fas fa-unlink"></i> Unassigned Counters</h3>
         <?php if (empty($unassignedCounters)): ?>
-            <p class="empty-message">Todos los contadores están asignados a grupos.</p>
+            <p class="empty-message">All counters are assigned to groups.</p>
         <?php else: ?>
             <div class="unassigned-counters-list">
                 <?php foreach ($unassignedCounters as $counter): ?>
@@ -251,7 +229,7 @@ foreach ($groups as $group) {
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete_counter">
                                 <input type="hidden" name="counter_id" value="<?= $counter['id'] ?>">
-                                <button type="submit" class="btn-danger" onclick="return confirm('¿Eliminar contador?')">
+                                <button type="submit" class="btn-danger" onclick="return confirm('Delete counter?')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -264,9 +242,9 @@ foreach ($groups as $group) {
     
     <div class="settings-section">
         <div class="logout-container">
-            <p>Usuario: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></p>
+            <p>User: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></p>
             <a href="logout.php" class="btn-danger" style="display: inline-block; text-decoration: none; margin-top: 1rem;">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                <i class="fas fa-sign-out-alt"></i> Log Out
             </a>
         </div>
     </div>

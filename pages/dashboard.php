@@ -54,8 +54,8 @@ $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php if (empty($groupsData) && empty($unassignedCounters)): ?>
         <div class="empty-state">
             <i class="fas fa-folder-open" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
-            <h3 style="color: #666; margin-bottom: 0.5rem;">No tienes grupos ni contadores</h3>
-            <p style="color: #999;">Ve a Ajustes para crear tu primer grupo o contador.</p>
+            <h3 style="color: #666; margin-bottom: 0.5rem;">You have no groups or counters</h3>
+            <p style="color: #999;">Go to Settings to create your first group or counter.</p>
         </div>
     <?php else: ?>
         <div class="groups-grid">
@@ -93,7 +93,7 @@ $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <p class="empty-group-message">Sin contadores asignados</p>
+                        <p class="empty-group-message">No counters assigned</p>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
@@ -116,7 +116,7 @@ $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="history-section">
             <div class="history-header" onclick="toggleHistory()">
-                <h3><i class="fas fa-history"></i> Historial (10 últimos)</h3>
+                <h3><i class="fas fa-history"></i> History (Last 10)</h3>
                 <i class="fas fa-chevron-down history-toggle-icon" id="historyToggleIcon"></i>
             </div>
             <div class="history-content" id="historyContent" style="display: none;">

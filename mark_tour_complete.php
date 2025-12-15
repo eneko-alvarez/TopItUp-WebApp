@@ -39,7 +39,7 @@ if (isset($_SESSION['userid'])) {
 } else {
     echo json_encode([
         'success' => false, 
-        'message' => 'No hay sesión activa'
+        'message' => 'No active session'
     ]);
 }
 ?>
