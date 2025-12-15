@@ -317,20 +317,24 @@ function updateSourceOptions() {
 
 .settings-header h2 {
     margin: 0;
-    color: #667eea;
+    color: #ffffff;
 }
 
 .settings-section {
-    background: white;
+    background: #1a1a1a;
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #2a2a2a;
 }
 
 .settings-section h3 {
     margin-top: 0;
-    color: #333;
+    color: #ffffff;
+}
+
+.settings-section p {
+    color: #a0a0a0;
 }
 
 .invite-code-display {
@@ -341,13 +345,14 @@ function updateSourceOptions() {
 
 .invite-code-display code {
     flex: 1;
-    background: #f8f9fa;
+    background: #0a0a0a;
     padding: 12px;
     border-radius: 8px;
     font-size: 18px;
     font-weight: bold;
     letter-spacing: 2px;
     border: 2px dashed #667eea;
+    color: #ffffff;
 }
 
 .btn-copy {
@@ -372,11 +377,20 @@ function updateSourceOptions() {
 
 .member-item {
     padding: 15px;
-    background: #f8f9fa;
+    background: #262626;
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid #2a2a2a;
+}
+
+.member-item strong {
+    color: #ffffff;
+}
+
+.member-item small {
+    color: #a0a0a0;
 }
 
 .member-info {
@@ -391,19 +405,38 @@ function updateSourceOptions() {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
-    color: #333;
+    color: #ffffff;
 }
 
-.change-source-form select {
+.change-source-form select,
+.timespan-form input[type="date"] {
     width: 100%;
     padding: 10px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #2a2a2a;
     border-radius: 8px;
     font-size: 14px;
+    background: #0a0a0a;
+    color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+.change-source-form select:focus,
+.timespan-form input[type="date"]:focus {
+    border-color: #667eea;
+    outline: none;
+    background: #1a1a1a;
+}
+
+.timespan-form label {
+    color: #ffffff;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
 }
 
 .danger-zone {
     border: 2px solid #dc3545;
+    background: rgba(220, 53, 69, 0.05) !important;
 }
 
 .danger-zone h3 {

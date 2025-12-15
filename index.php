@@ -108,11 +108,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     <link rel="apple-touch-icon" sizes="180x180" href="files/logo.png">
 
     <!-- Colores de tema (Android splash/barra) -->
-    <meta name="theme-color" content="#f4f4f4ff">
+    <meta name="theme-color" content="#000000">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #000000;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -120,78 +126,181 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             align-items: center;
             min-height: 100vh;
         }
+        
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        .tab {
-            flex: 1;
-            padding: 10px;
+        
+        .logo-container {
             text-align: center;
-            background: #a6b2e9ff;
-            cursor: pointer;
+            margin-bottom: 32px;
+        }
+        
+        .logo-container img {
+            width: 180px;
+            height: auto;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-text {
+            color: #a0a0a0;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 8px;
+        }
+        
+        .form-switcher {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            background: #0a0a0a;
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
+        }
+        
+        .switch-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            color: #808080;
             border: none;
-            font-size: 16px;
-        }
-        .tab.active {
-            background: #667eea;
-            color: white;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="password"], input[type="email"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 4px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        button:hover {
-            background: #5a6fd8;
+        
+        .switch-btn.active {
+            background: #667eea;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
+        
+        .switch-btn:hover:not(.active) {
+            color: #ffffff;
+            background: #1a1a1a;
+        }
+        
         .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 4px;
-            background: #dad7f8ff;
-            color: #1c1d72ff;
-            border: 1px solid #c6c6f5ff;
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #ffffff;
+            border: 1px solid #667eea;
+            font-size: 14px;
+            line-height: 1.5;
         }
+        
         .form-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
+        
         .form-content.active {
             display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        
+        input[type="text"], 
+        input[type="password"], 
+        input[type="email"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #2a2a2a;
+            border-radius: 10px;
+            background: #0a0a0a;
+            color: #ffffff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        input[type="text"]:focus, 
+        input[type="password"]:focus, 
+        input[type="email"]:focus {
+            border-color: #667eea;
+            background: #1a1a1a;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        input::placeholder {
+            color: #505050;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 32px 24px;
+            }
+            
+            body {
+                padding: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <center><img src="files/full_logo.png" alt="TopItUp Logo" style="width: 200px; height: auto;"></center><br>
+        <div class="logo-container">
+            <img src="files/full_logo.png" alt="TopItUp Logo">
+            <div class="welcome-text">Track what matters to you</div>
+        </div>
         
         <?php if ($message): ?>
             <div class="message">
@@ -199,9 +308,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             </div>
         <?php endif; ?>
         
-        <div class="tabs">
-            <button class="tab active" onclick="showForm('login')">Login</button>
-            <button class="tab" onclick="showForm('register')">Register</button>
+        <div class="form-switcher">
+            <button class="switch-btn active" onclick="showForm('login')">Sign In</button>
+            <button class="switch-btn" onclick="showForm('register')">Sign Up</button>
         </div>
         
         <!-- Login Form -->
@@ -210,16 +319,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 <input type="hidden" name="action" value="login">
                 
                 <div class="form-group">
-                    <label for="login-username">Username:</label>
-                    <input type="text" id="login-username" name="username" required>
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" name="username" placeholder="Enter your username" required autofocus>
                 </div>
                 
                 <div class="form-group">
-                    <label for="login-password">Password:</label>
-                    <input type="password" id="login-password" name="password" required>
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
                 </div>
                 
-                <button type="submit">Login</button>
+                <button type="submit" class="submit-btn">Sign In</button>
             </form>
         </div>
         
@@ -229,36 +338,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 <input type="hidden" name="action" value="register">
                 
                 <div class="form-group">
-                    <label for="register-username">Username:</label>
-                    <input type="text" id="register-username" name="username" required>
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" name="username" placeholder="Choose a username" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-email">Email:</label>
-                    <input type="email" id="register-email" name="email" required>
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-password">Password:</label>
-                    <input type="password" id="register-password" name="password" required>
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" name="password" placeholder="Create a password" required>
                 </div>
                 
-                <button type="submit">Register</button>
+                <button type="submit" class="submit-btn">Create Account</button>
             </form>
         </div>
     </div>
     
     <script>
         function showForm(formType) {
+            // Hide all forms
             document.querySelectorAll('.form-content').forEach(form => {
                 form.classList.remove('active');
             });
             
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
+            // Remove active from all buttons
+            document.querySelectorAll('.switch-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
             
+            // Show selected form
             document.getElementById(formType + '-form').classList.add('active');
+            
+            // Add active to clicked button
             event.target.classList.add('active');
         }
     </script>

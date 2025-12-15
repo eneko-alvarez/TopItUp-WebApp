@@ -87,14 +87,14 @@ $rankings = getLeaderboardRankings($pdo, $leaderboard_id);
 
 .leaderboard-view-header h2 {
     margin: 0;
-    color: #667eea;
+    color: #ffffff;
 }
 
 .rankings-table {
-    background: white;
+    background: #1a1a1a;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #2a2a2a;
 }
 
 .rankings-table table {
@@ -103,16 +103,18 @@ $rankings = getLeaderboardRankings($pdo, $leaderboard_id);
 }
 
 .rankings-table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #262626;
+    color: #ffffff;
     padding: 15px;
     text-align: left;
     font-weight: 600;
+    border-bottom: 2px solid #667eea;
 }
 
 .rankings-table td {
     padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #2a2a2a;
+    color: #ffffff;
 }
 
 .rankings-table tr:last-child td {
@@ -120,7 +122,7 @@ $rankings = getLeaderboardRankings($pdo, $leaderboard_id);
 }
 
 .rankings-table tr:hover {
-    background: #f8f9fa;
+    background: #262626;
 }
 
 .rank-cell {
@@ -150,10 +152,10 @@ $rankings = getLeaderboardRankings($pdo, $leaderboard_id);
 }
 
 .current-user-row {
-    background: #f0f4ff !important;
+    background: rgba(102, 126, 234, 0.2) !important;
 }
 
 .current-user-row:hover {
-    background: #e6edff !important;
+    background: rgba(102, 126, 234, 0.3) !important;
 }
 </style>

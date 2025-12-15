@@ -117,10 +117,10 @@ if (empty($countersToShow)) {
         </div>
         
         <!-- Recent Increments History with Delete Option -->
-        <div class="increment-history-section" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #f8f9fa;">
-            <h4 style="color: #495057; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+        <div class="increment-history-section" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #2a2a2a;">
+            <h4 style="color: #ffffff; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
                 <i class="fas fa-history"></i> Recent Activity
-                <span style="font-size: 12px; color: #999; font-weight: normal;">(click <i class="fas fa-trash" style="font-size: 10px;"></i> to undo)</span>
+                <span style="font-size: 12px; color: #808080; font-weight: normal;">(click <i class="fas fa-trash" style="font-size: 10px;"></i> to undo)</span>
             </h4>
             <?php
             // Get last 10 logs for this counter/group
@@ -149,18 +149,18 @@ if (empty($countersToShow)) {
             $recentLogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             if (empty($recentLogs)): ?>
-                <p style="color: #999; font-style: italic; text-align: center; padding: 20px;">No records yet</p>
+                <p style="color: #808080; font-style: italic; text-align: center; padding: 20px;">No records yet</p>
             <?php else: ?>
                 <div class="history-log-list" style="display: flex; flex-direction: column; gap: 8px;">
                     <?php foreach ($recentLogs as $log): ?>
-                        <div class="history-log-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid <?= isset($log['counter_name']) ? htmlspecialchars($log['color']) : $pageColor ?>;">
+                        <div class="history-log-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #262626; border-radius: 8px; border-left: 3px solid <?= isset($log['counter_name']) ? htmlspecialchars($log['color']) : $pageColor ?>; border: 1px solid #2a2a2a; border-left: 3px solid <?= isset($log['counter_name']) ? htmlspecialchars($log['color']) : $pageColor ?>;">
                             <div>
                                 <?php if (isset($log['counter_name'])): ?>
                                     <span style="color: <?= htmlspecialchars($log['color']) ?>; font-weight: 600; margin-right: 10px;">
                                         <?= htmlspecialchars($log['counter_name']) ?>
                                     </span>
                                 <?php endif; ?>
-                                <span style="color: #6c757d; font-size: 14px;">
+                                <span style="color: #a0a0a0; font-size: 14px;">
                                     <?= date('d/m/Y H:i', strtotime($log['date'] . ' ' . $log['hour'])) ?>
                                 </span>
                                 <?php if ($log['latitude'] && $log['longitude']): ?>

@@ -55,7 +55,7 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
                         <i class="fas fa-chart-line"></i> View Rankings
                     </a>
                     
-                    <a href="?page=leaderboard_settings&id=<?= $leaderboard['id'] ?>" class="btn-settings" style="display: block; width: 100%; text-align: center; padding: 10px; background: #6c757d; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px;">
+                    <a href="?page=leaderboard_settings&id=<?= $leaderboard['id'] ?>" class="btn-settings" style="display: block; width: 100%; text-align: center; padding: 10px; background: #2a2a2a; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px; border: 1px solid #404040;">
                         <i class="fas fa-cog"></i> Settings
                     </a>
                 </div>
@@ -68,7 +68,7 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
      <!-- Create New Leaderboard -->
     <div class="leaderboard-create-section">
         <h3>Create New Leaderboard</h3>
-        <p style="margin: 10px 0; color: #666;">Create a private leaderboard and invite your friends to compete!</p>
+        <p style="margin: 10px 0; color: #a0a0a0;">Create a private leaderboard and invite your friends to compete!</p>
         <a href="create_leaderboard.php" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
             <i class="fas fa-plus"></i> Create Leaderboard
         </a>
@@ -92,17 +92,22 @@ function copyInviteCode(code) {
 
 .leaderboard-create-section,
 .leaderboard-join-section {
-    background: white;
+    background: #1a1a1a;
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 30px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #2a2a2a;
 }
 
 .leaderboard-create-section h3,
 .leaderboard-join-section h3 {
     margin-top: 0;
-    color: #667eea;
+    color: #ffffff;
+}
+
+.leaderboard-create-section p,
+.leaderboard-join-section p {
+    color: #a0a0a0;
 }
 
 .inline-form {
@@ -116,10 +121,19 @@ function copyInviteCode(code) {
     flex: 1;
     min-width: 150px;
     padding: 12px 15px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #2a2a2a;
     border-radius: 8px;
     font-size: 14px;
     box-sizing: border-box;
+    background: #0a0a0a;
+    color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+.inline-form input[type="text"]:focus {
+    border-color: #667eea;
+    outline: none;
+    background: #1a1a1a;
 }
 
 .inline-form .btn-primary {
@@ -142,10 +156,10 @@ function copyInviteCode(code) {
 }
 
 .leaderboard-card {
-    background: white;
+    background: #1a1a1a;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #2a2a2a;
 }
 
 .leaderboard-header {
@@ -157,7 +171,7 @@ function copyInviteCode(code) {
 
 .leaderboard-header h4 {
     margin: 0;
-    color: #333;
+    color: #ffffff;
 }
 
 .badge-creator {
@@ -170,16 +184,17 @@ function copyInviteCode(code) {
 }
 
 .invite-section {
-    background: #f8f9fa;
+    background: #262626;
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 15px;
+    border: 1px solid #2a2a2a;
 }
 
 .invite-section label {
     display: block;
     font-size: 12px;
-    color: #666;
+    color: #a0a0a0;
     margin-bottom: 5px;
 }
 
@@ -191,13 +206,14 @@ function copyInviteCode(code) {
 
 .invite-code-box code {
     flex: 1;
-    background: white;
+    background: #0a0a0a;
     padding: 8px 12px;
     border-radius: 6px;
     font-size: 16px;
     font-weight: bold;
     letter-spacing: 2px;
     border: 2px dashed #667eea;
+    color: #ffffff;
 }
 
 .btn-copy {
@@ -224,7 +240,7 @@ function copyInviteCode(code) {
 }
 
 .stat-label {
-    color: #666;
+    color: #a0a0a0;
     font-size: 14px;
 }
 

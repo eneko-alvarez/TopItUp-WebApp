@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -69,19 +69,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             padding: 20px;
         }
         .create-container {
-            background: white;
+            background: #1a1a1a;
             border-radius: 16px;
             padding: 40px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         .create-header {
             text-align: center;
             margin-bottom: 30px;
         }
         .create-header h1 {
-            color: #667eea;
+            color: #ffffff;
             margin: 10px 0;
         }
         .form-group {
@@ -91,15 +92,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #ffffff;
         }
         .form-group input,
         .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e9ecef;
+            border: 2px solid #2a2a2a;
             border-radius: 8px;
             font-size: 14px;
+            background: #0a0a0a;
+            color: #ffffff;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+            background: #1a1a1a;
         }
         .btn-create {
             width: 100%;
@@ -111,10 +121,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         .btn-create:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
     </style>
 </head>

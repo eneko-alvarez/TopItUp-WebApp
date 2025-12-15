@@ -77,7 +77,7 @@ $userGroups = getUserGroups($pdo, $user_id);
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -85,33 +85,44 @@ $userGroups = getUserGroups($pdo, $user_id);
             padding: 20px;
         }
         .join-container {
-            background: white;
+            background: #1a1a1a;
             border-radius: 16px;
             padding: 40px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         .join-header {
             text-align: center;
             margin-bottom: 30px;
         }
         .join-header h1 {
-            color: #667eea;
+            color: #ffffff;
             margin: 10px 0;
         }
         .error-box {
-            background: #fee;
-            border-left: 4px solid #f44;
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid #f44336;
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 8px;
+            color: #ff6b6b;
         }
         .leaderboard-info {
-            background: #f8f9fa;
+            background: #262626;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
+            border: 1px solid #2a2a2a;
+        }
+        .leaderboard-info h3 {
+            color: #ffffff;
+            margin: 0 0 10px 0;
+        }
+        .leaderboard-info p {
+            color: #a0a0a0;
+            margin: 0;
         }
         .form-group {
             margin-bottom: 20px;
@@ -120,14 +131,22 @@ $userGroups = getUserGroups($pdo, $user_id);
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #ffffff;
         }
         .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e9ecef;
+            border: 2px solid #2a2a2a;
             border-radius: 8px;
             font-size: 14px;
+            background: #0a0a0a;
+            color: #ffffff;
+            transition: border-color 0.3s ease;
+        }
+        .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+            background: #1a1a1a;
         }
         .btn-join {
             width: 100%;
@@ -139,10 +158,11 @@ $userGroups = getUserGroups($pdo, $user_id);
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         .btn-join:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
     </style>
 </head>
