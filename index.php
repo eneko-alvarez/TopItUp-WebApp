@@ -18,6 +18,12 @@ if (isset($_SESSION['error_message'])) {
     unset($_SESSION['error_message']);
 }
 
+// Recuperar datos del formulario si hay un error
+$form_username = $_SESSION['form_username'] ?? '';
+$form_email = $_SESSION['form_email'] ?? '';
+unset($_SESSION['form_username']);
+unset($_SESSION['form_email']);
+
 // Registro
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'register') {
     $username = trim($_POST['username'] ?? '');
@@ -28,8 +34,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
     // Validar que las contraseñas coincidan
     if ($password !== $confirm_password) {
         $message = "Passwords do not match.";
-        header('Location: index.php?form=register');
         $_SESSION['error_message'] = $message;
+        $_SESSION['form_username'] = $username;
+        $_SESSION['form_email'] = $email;
+        header('Location: index.php?form=register');
+        exit;
+    } elseif (strlen($password) < 8) {
+        $message = "Password must be at least 8 characters.";
+        $_SESSION['error_message'] = $message;
+        $_SESSION['form_username'] = $username;
+        $_SESSION['form_email'] = $email;
+        header('Location: index.php?form=register');
         exit;
     } elseif ($username && $email && $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -40,17 +55,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
             $stmt->execute([$username, $email, $hashedPassword]);
             $user_id = $pdo->lastInsertId();
             
-            // Crear contadores por defecto
-            $default_counters = [
-                ['name' => 'Cervezas', 'color' => '#eafb93ff', 'is_public' => 1],
-                ['name' => 'Cubatas', 'color' => '#4facfe', 'is_public' => 1],
-                ['name' => 'Chupitos', 'color' => '#43e97b', 'is_public' => 1],
-                ['name' => 'Gym', 'color' => '#fa709a', 'is_public' => 1]
+            // Crear grupo "Cubatas" con sus contadores
+            $stmt = $pdo->prepare("INSERT INTO counter_groups (user_id, name, color, is_public) VALUES (?, ?, ?, 1)");
+            $stmt->execute([$user_id, 'Cubatas', '#4facfe']);
+            $group_id = $pdo->lastInsertId();
+            
+            // Contadores para el grupo Cubatas con valores random
+            $cubatas_counters = [
+                ['name' => 'Roncola', 'color' => '#ff6b6b'],
+                ['name' => 'Gintonic', 'color' => '#4ecdc4'],
+                ['name' => 'odka-limon', 'color' => '#ffe66d']
             ];
             
-            foreach ($default_counters as $counter) {
-                $stmt = $pdo->prepare("INSERT INTO counters (user_id, name, color, is_public) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$user_id, $counter['name'], $counter['color'], $counter['is_public']]);
+            foreach ($cubatas_counters as $counter_data) {
+                // Crear contador con valor random entre 1-20
+                $random_value = rand(1, 20);
+                $stmt = $pdo->prepare("INSERT INTO counters (user_id, name, color, is_public, count) VALUES (?, ?, ?, 1, ?)");
+                $stmt->execute([$user_id, $counter_data['name'], $counter_data['color'], $random_value]);
+                $counter_id = $pdo->lastInsertId();
+                
+                // Asignar contador al grupo
+                $stmt = $pdo->prepare("INSERT INTO group_counters (group_id, counter_id) VALUES (?, ?)");
+                $stmt->execute([$group_id, $counter_id]);
+            }
+            
+            // Contadores individuales con valores random
+            $individual_counters = [
+                ['name' => 'Cervezas', 'color' => '#eafb93ff'],
+                ['name' => 'Gym', 'color' => '#fa709a']
+            ];
+            
+            foreach ($individual_counters as $counter_data) {
+                $random_value = rand(1, 20);
+                $stmt = $pdo->prepare("INSERT INTO counters (user_id, name, color, is_public, count) VALUES (?, ?, ?, 1, ?)");
+                $stmt->execute([$user_id, $counter_data['name'], $counter_data['color'], $random_value]);
             }
             
             $pdo->commit();
@@ -72,15 +110,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
                 $_SERVER["HTTP_USER_AGENT"] ?? '',
                 $_SERVER["REMOTE_ADDR"] ?? '',
             ]);
-            setcookie("rememberuser", $rememberToken, time() + 365*24*60*60, "/");
+            // Establecer cookie con flags de seguridad
+            setcookie("rememberuser", $rememberToken, [
+                'expires' => time() + 365*24*60*60,  // 1 año
+                'path' => '/',
+                'domain' => '',
+                'secure' => true,      // Solo HTTPS
+                'httponly' => true,    // No accesible desde JavaScript
+                'samesite' => 'Strict' // Protección CSRF
+            ]);
             
             header("Location: dashboard.php");
             exit;
         } catch(PDOException $e) {
             $pdo->rollBack();
             $message = "Username or email already exists.";
-            header('Location: index.php?form=register');
             $_SESSION['error_message'] = $message;
+            $_SESSION['form_username'] = $username;
+            $_SESSION['form_email'] = $email;
+            header('Location: index.php?form=register');
             exit;
         }
     }
@@ -111,7 +159,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 $_SERVER["HTTP_USER_AGENT"] ?? '',
                 $_SERVER["REMOTE_ADDR"] ?? '',
             ]);
-            setcookie("rememberuser", $rememberToken, time() + 365*24*60*60, "/");
+            // Establecer cookie con flags de seguridad
+            setcookie("rememberuser", $rememberToken, [
+                'expires' => time() + 365*24*60*60,  // 1 año
+                'path' => '/',
+                'domain' => '',
+                'secure' => true,      // Solo HTTPS
+                'httponly' => true,    // No accesible desde JavaScript
+                'samesite' => 'Strict' // Protección CSRF
+            ]);
             header("Location: dashboard.php");
             exit;
         } else {
@@ -446,13 +502,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 
                 <div class="form-group">
                     <label for="register-username">Username</label>
-                    <input type="text" id="register-username" name="username" placeholder="Choose a username" required autocomplete="off">
+                    <input type="text" id="register-username" name="username" placeholder="Choose a username" value="<?php echo htmlspecialchars($form_username); ?>" required autocomplete="off">
                     <div id="username-status" class="username-status"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="register-email">Email</label>
-                    <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+                    <input type="email" id="register-email" name="email" placeholder="Enter your email" value="<?php echo htmlspecialchars($form_email); ?>" required>
                 </div>
                 
                 <div class="form-group">

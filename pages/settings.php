@@ -204,7 +204,7 @@ foreach ($groups as $group) {
     
     
     <div class="settings-section">
-        <h3><i class="fas fa-unlink"></i> Unassigned Counters</h3>
+        <h3><i class="fas fa-unlink"></i> Single Counters</h3>
         <?php if (empty($unassignedCounters)): ?>
             <p class="empty-message">All counters are assigned to groups.</p>
         <?php else: ?>

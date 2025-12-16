@@ -8,29 +8,40 @@ if (isset($_SESSION['userid'])) {
     try {
         $user_id = (int)$_SESSION['userid'];
         
-        $stmt = $pdo->prepare("UPDATE users SET first_login = 0 WHERE id = ?");
-        $result = $stmt->execute([$user_id]);
+        // Iniciar transacción para asegurar atomicidad
+        $pdo->beginTransaction();
         
-        if ($result && $stmt->rowCount() > 0) {
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Tour completado correctamente',
-                'user_id' => $user_id,
-                'rows_affected' => $stmt->rowCount()
-            ]);
-        } else {
-            $checkStmt = $pdo->prepare("SELECT first_login FROM users WHERE id = ?");
-            $checkStmt->execute([$user_id]);
-            $currentValue = $checkStmt->fetch(PDO::FETCH_ASSOC);
-            
-            echo json_encode([
-                'success' => false, 
-                'message' => 'No se actualizó ninguna fila',
-                'user_id' => $user_id,
-                'current_first_login' => $currentValue['first_login'] ?? 'no encontrado'
-            ]);
-        }
+        // Marcar tour como completado
+        $stmt = $pdo->prepare("UPDATE users SET first_login = 0 WHERE id = ?");
+        $stmt->execute([$user_id]);
+        
+        // Borrar todos los grupos del usuario (CASCADE borrará group_counters automáticamente)
+        $stmt = $pdo->prepare("DELETE FROM counter_groups WHERE user_id = ?");
+        $groups_deleted = $stmt->execute([$user_id]);
+        $groups_count = $stmt->rowCount();
+        
+        // Borrar todos los contadores del usuario (CASCADE borrará logs automáticamente)
+        $stmt = $pdo->prepare("DELETE FROM counters WHERE user_id = ?");
+        $counters_deleted = $stmt->execute([$user_id]);
+        $counters_count = $stmt->rowCount();
+        
+        // Confirmar transacción
+        $pdo->commit();
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Tour completado y datos de demostración eliminados',
+            'user_id' => $user_id,
+            'groups_deleted' => $groups_count,
+            'counters_deleted' => $counters_count
+        ]);
+        
     } catch (PDOException $e) {
+        // Revertir cambios si algo falla
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        
         echo json_encode([
             'success' => false, 
             'error' => $e->getMessage()

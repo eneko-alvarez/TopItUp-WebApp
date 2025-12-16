@@ -194,79 +194,71 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = this.querySelector('.increment-btn');
             const btnText = submitBtn.querySelector('.btn-text');
             const btnLoading = submitBtn.querySelector('.btn-loading');
+            const currentForm = this;
             
             // Show loading state
             btnText.style.display = 'none';
             btnLoading.style.display = 'inline';
             submitBtn.disabled = true;
+
+            let submitted = false;
             
-            // Request geolocation - only if permission already granted
-            if (navigator.geolocation && navigator.permissions) {
-                navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-                    if (result.state === 'granted' || result.state === 'prompt') {
-                        // Permission granted or pending - get location (will ask if pending)
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                const latInput = document.createElement('input');
-                                latInput.type = 'hidden';
-                                latInput.name = 'latitude';
-                                latInput.value = position.coords.latitude;
-                                this.appendChild(latInput);
-                                
-                                const lonInput = document.createElement('input');
-                                lonInput.type = 'hidden';
-                                lonInput.name = 'longitude';
-                                lonInput.value = position.coords.longitude;
-                                this.appendChild(lonInput);
-                                
-                                this.submit();
-                            },
-                            (error) => {
-                                // Error or denied, submit anyway
-                                this.submit();
-                            },
-                            {
-                                maximumAge: 60000,
-                                enableHighAccuracy: false
-                            }
-                        );
-                    } else {
-                        // Permission denied, submit without location
-                        this.submit();
-                    }
-                }).catch(() => {
-                    // Permissions API error, submit without location
-                    this.submit();
-                });
-            } else if (navigator.geolocation) {
-                // Fallback for browsers without Permissions API - ask for location
+            // 1. TIMEOUT DE SEGURIDAD (CRÍTICO): 
+            // Si la geolocalización tarda más de 2.5s, enviamos el formulario sin ella.
+            // Esto garantiza que el +1 NUNCA se bloquee.
+            const safetyTimeout = setTimeout(() => {
+                if (!submitted) {
+                    console.log('Safety timeout - submitting without location');
+                    submitted = true;
+                    currentForm.submit();
+                }
+            }, 2500);
+
+            // 2. Intentar obtener ubicación (Directo, el navegador gestiona permisos)
+            if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        const latInput = document.createElement('input');
-                        latInput.type = 'hidden';
-                        latInput.name = 'latitude';
-                        latInput.value = position.coords.latitude;
-                        this.appendChild(latInput);
-                        
-                        const lonInput = document.createElement('input');
-                        lonInput.type = 'hidden';
-                        lonInput.name = 'longitude';
-                        lonInput.value = position.coords.longitude;
-                        this.appendChild(lonInput);
-                        
-                        this.submit();
+                        // ÉXITO: Añadir ubicación y enviar
+                        if (!submitted) {
+                            clearTimeout(safetyTimeout);
+                            submitted = true;
+                            
+                            const latInput = document.createElement('input');
+                            latInput.type = 'hidden';
+                            latInput.name = 'latitude';
+                            latInput.value = position.coords.latitude;
+                            currentForm.appendChild(latInput);
+                            
+                            const lonInput = document.createElement('input');
+                            lonInput.type = 'hidden';
+                            lonInput.name = 'longitude';
+                            lonInput.value = position.coords.longitude;
+                            currentForm.appendChild(lonInput);
+                            
+                            currentForm.submit();
+                        }
                     },
                     (error) => {
-                        this.submit();
+                        // ERROR (Denegado/Timeout/Etc): Enviar sin ubicación
+                        console.log('Geolocation error:', error.message);
+                        if (!submitted) {
+                            clearTimeout(safetyTimeout);
+                            submitted = true;
+                            currentForm.submit();
+                        }
                     },
                     {
-                        maximumAge: 60000,
-                        enableHighAccuracy: false
+                        // Configuración que funciona en Safari/Tour
+                        enableHighAccuracy: true,
+                        timeout: 10000, 
+                        maximumAge: 0
                     }
                 );
             } else {
-                // No geolocation support, submit anyway
-                this.submit();
+                // NO SOPORTADO: Enviar inmediatamente
+                clearTimeout(safetyTimeout);
+                submitted = true;
+                currentForm.submit();
             }
         });
     });
