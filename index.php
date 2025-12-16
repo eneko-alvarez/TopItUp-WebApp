@@ -10,14 +10,28 @@ if (isset($_SESSION['userid'])) {
 require_once 'config.php';
 
 $message = '';
+$active_form = $_GET['form'] ?? 'login';
+
+// Recuperar mensaje de error de sesión si existe
+if (isset($_SESSION['error_message'])) {
+    $message = $_SESSION['error_message'];
+    unset($_SESSION['error_message']);
+}
 
 // Registro
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'register') {
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
     
-    if ($username && $email && $password) {
+    // Validar que las contraseñas coincidan
+    if ($password !== $confirm_password) {
+        $message = "Passwords do not match.";
+        header('Location: index.php?form=register');
+        $_SESSION['error_message'] = $message;
+        exit;
+    } elseif ($username && $email && $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         try {
             $pdo->beginTransaction();
@@ -40,10 +54,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
             }
             
             $pdo->commit();
-            $message = "Registration successful! Please login.";
+            
+            // Auto-login después de registro exitoso
+            $_SESSION["userid"] = $user_id;
+            $_SESSION["username"] = $username;
+            
+            // Generar token único para remember me
+            $rememberToken = bin2hex(random_bytes(32));
+            $expiry = date('Y-m-d H:i:s', strtotime('+1 year'));
+            
+            // Insertar en user_sessions
+            $stmt = $pdo->prepare("INSERT INTO user_sessions (user_id, token, expires_at, user_agent, ip) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $user_id,
+                $rememberToken,
+                $expiry,
+                $_SERVER["HTTP_USER_AGENT"] ?? '',
+                $_SERVER["REMOTE_ADDR"] ?? '',
+            ]);
+            setcookie("rememberuser", $rememberToken, time() + 365*24*60*60, "/");
+            
+            header("Location: dashboard.php");
+            exit;
         } catch(PDOException $e) {
             $pdo->rollBack();
             $message = "Username or email already exists.";
+            header('Location: index.php?form=register');
+            $_SESSION['error_message'] = $message;
+            exit;
         }
     }
 }
@@ -225,6 +263,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             margin-bottom: 20px;
         }
         
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #808080;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #667eea;
+        }
+        
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .username-status {
+            display: flex;
+            align-items: center;
+            margin-top: 6px;
+            font-size: 13px;
+            min-height: 20px;
+        }
+        
+        .username-status.checking {
+            color: #808080;
+        }
+        
+        .username-status.available {
+            color: #43e97b;
+        }
+        
+        .username-status.unavailable {
+            color: #fa709a;
+        }
+        
+        .username-status-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+        }
+        
         label {
             display: block;
             margin-bottom: 8px;
@@ -246,6 +340,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             font-size: 15px;
             transition: all 0.3s ease;
             outline: none;
+        }
+        
+        .password-wrapper input[type="password"],
+        .password-wrapper input[type="text"] {
+            padding-right: 48px;
         }
         
         input[type="text"]:focus, 
@@ -298,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
 <body>
     <div class="container">
         <div class="logo-container">
-            <img src="files/full_logo.png" alt="TopItUp Logo">
+            <img src="files/full_logo.png?v=1.1" alt="TopItUp Logo">
             <div class="welcome-text">Track what matters to you</div>
         </div>
         
@@ -309,12 +408,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <?php endif; ?>
         
         <div class="form-switcher">
-            <button class="switch-btn active" onclick="showForm('login')">Sign In</button>
-            <button class="switch-btn" onclick="showForm('register')">Sign Up</button>
+            <button class="switch-btn <?php echo $active_form === 'login' ? 'active' : ''; ?>" onclick="showForm('login')">Sign In</button>
+            <button class="switch-btn <?php echo $active_form === 'register' ? 'active' : ''; ?>" onclick="showForm('register')">Sign Up</button>
         </div>
         
         <!-- Login Form -->
-        <div id="login-form" class="form-content active">
+        <div id="login-form" class="form-content <?php echo $active_form === 'login' ? 'active' : ''; ?>">
             <form method="POST">
                 <input type="hidden" name="action" value="login">
                 
@@ -325,7 +424,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
+                            <svg id="eye-icon-login-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="submit-btn">Sign In</button>
@@ -333,13 +440,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         </div>
         
         <!-- Register Form -->
-        <div id="register-form" class="form-content">
+        <div id="register-form" class="form-content <?php echo $active_form === 'register' ? 'active' : ''; ?>">
             <form method="POST">
                 <input type="hidden" name="action" value="register">
                 
                 <div class="form-group">
                     <label for="register-username">Username</label>
-                    <input type="text" id="register-username" name="username" placeholder="Choose a username" required>
+                    <input type="text" id="register-username" name="username" placeholder="Choose a username" required autocomplete="off">
+                    <div id="username-status" class="username-status"></div>
                 </div>
                 
                 <div class="form-group">
@@ -349,7 +457,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 
                 <div class="form-group">
                     <label for="register-password">Password</label>
-                    <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
+                            <svg id="eye-icon-register-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-confirm-password" name="confirm_password" placeholder="Confirm your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-confirm-password')">
+                            <svg id="eye-icon-register-confirm-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="submit-btn">Create Account</button>
@@ -374,6 +503,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             
             // Add active to clicked button
             event.target.classList.add('active');
+        }
+        
+        // Username availability checker
+        let usernameTimeout;
+        const usernameInput = document.getElementById('register-username');
+        const usernameStatus = document.getElementById('username-status');
+        
+        if (usernameInput) {
+            usernameInput.addEventListener('input', function() {
+                clearTimeout(usernameTimeout);
+                const username = this.value.trim();
+                
+                if (username.length === 0) {
+                    usernameStatus.innerHTML = '';
+                    usernameStatus.className = 'username-status';
+                    return;
+                }
+                
+                if (username.length < 3) {
+                    usernameStatus.innerHTML = `
+                        <svg class="username-status-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>At least 3 characters required</span>
+                    `;
+                    usernameStatus.className = 'username-status unavailable';
+                    return;
+                }
+                
+                // Show checking status
+                usernameStatus.innerHTML = `
+                    <svg class="username-status-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Checking...</span>
+                `;
+                usernameStatus.className = 'username-status checking';
+                
+                // Debounce the check
+                usernameTimeout = setTimeout(() => {
+                    checkUsername(username);
+                }, 500);
+            });
+        }
+        
+        function checkUsername(username) {
+            fetch('check_username.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'username=' + encodeURIComponent(username)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.available) {
+                    usernameStatus.innerHTML = `
+                        <svg class="username-status-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>${data.message}</span>
+                    `;
+                    usernameStatus.className = 'username-status available';
+                } else {
+                    usernameStatus.innerHTML = `
+                        <svg class="username-status-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>${data.message}</span>
+                    `;
+                    usernameStatus.className = 'username-status unavailable';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking username:', error);
+            });
+        }
+        
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById('eye-icon-' + inputId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Change to eye-slash icon
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                `;
+            } else {
+                input.type = 'password';
+                // Change back to eye icon
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+            }
         }
     </script>
     <script>

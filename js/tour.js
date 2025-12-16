@@ -40,23 +40,32 @@ function initTour(currentPage, tourStep) {
             buttons: [{
                 text: 'Entendido',
                 action: function () {
+                    // Trigger geolocation request immediately on button click
                     if (navigator.geolocation) {
+                        console.log('Requesting location permission...');
                         navigator.geolocation.getCurrentPosition(
                             (position) => {
                                 console.log('Location permission granted:', position.coords);
-                                window.location.href = '?page=dashboard&tour_step=2';
+                                // Wait a bit to ensure the permission dialog was shown
+                                setTimeout(() => {
+                                    window.location.href = '?page=dashboard&tour_step=2';
+                                }, 300);
                             },
                             (error) => {
                                 console.log('Location permission denied or error:', error);
-                                window.location.href = '?page=dashboard&tour_step=2';
+                                // Continue anyway
+                                setTimeout(() => {
+                                    window.location.href = '?page=dashboard&tour_step=2';
+                                }, 300);
                             },
                             {
-                                enableHighAccuracy: false,
-                                timeout: 30000,
+                                enableHighAccuracy: true,
+                                timeout: 20000,
                                 maximumAge: 0
                             }
                         );
                     } else {
+                        console.log('Geolocation not supported');
                         window.location.href = '?page=dashboard&tour_step=2';
                     }
                 }
