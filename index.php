@@ -184,7 +184,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopItUp - Login/Register</title>
+    <title>TopItUp - Track What Matters</title>
+    <meta name="description" content="TopItUp is the ultimate habit tracking app. Keep count of your drinks, workouts, cigarettes, or anything else. Simple, fast, and privacy-focused.">
+    <meta name="keywords" content="counter app, habit tracker, activity tracker, leaderboard, count drinks, track habits, pwa, productivity">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="TopItUp Team">
+    <link rel="canonical" href="https://topitup.party/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://topitup.party/">
+    <meta property="og:title" content="TopItUp - Track What Matters">
+    <meta property="og:description" content="The simplest way to track your habits and compete with friends. Install the app to get started.">
+    <meta property="og:image" content="https://topitup.party/files/landing-bg.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://topitup.party/">
+    <meta property="twitter:title" content="TopItUp - Track What Matters">
+    <meta property="twitter:description" content="The simplest way to track your habits and compete with friends. Install the app to get started.">
+    <meta property="twitter:image" content="https://topitup.party/files/landing-bg.png">
     <!-- Manifest para Android/Chromium y soporte general PWA -->
     <link rel="manifest" href="/manifest.webmanifest">
 
@@ -451,7 +470,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 1. LANDING PAGE (Shown if NOT standalone) -->
+    <div id="install-landing" style="display: none;">
+        <div class="landing-header">
+            <div class="landing-logo">
+                <img src="files/full_logo.png?v=1.1" alt="TopItUp">
+            </div>
+            <h2 class="landing-subtitle">
+                Track what matters.<br>
+                Right from your pocket.
+            </h2>
+        </div>
+
+        <!-- 3:4 Aspect Ratio Carousel (Circular/Infinite Loop Effect) -->
+        <div class="screenshot-carousel-container">
+            <div class="screenshot-carousel">
+                <!-- Original Items -->
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 1"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 2"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 3"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 4"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 5"></div>
+                <!-- Duplicated for Loop Effect -->
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 1"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 2"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 3"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 4"></div>
+                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 5"></div>
+            </div>
+        </div>
+        
+        <div class="landing-footer">
+            <br>
+            <p class="install-text">Easier installation than from the<br>App Store or Google Play Store</p>
+            
+            <div class="landing-buttons">
+                <!-- Added logo slots as requested -->
+                <button onclick="showInstructions('ios')" class="install-btn ios-btn">
+                    <img src="files/ios_logo.png" class="btn-icon-img" alt="Safari" onerror="this.style.display='none'"> 
+                    <span class="btn-text">For iOS</span>
+                </button>
+                <button onclick="showInstructions('android')" class="install-btn android-btn">
+                    <img src="files/android_logo.png" class="btn-icon-img" alt="Chrome" onerror="this.style.display='none'">
+                    <span class="btn-text">For Android</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Instructions Modals -->
+        <div id="ios-instructions" class="instruction-modal" style="display: none;">
+            <div class="instruction-content">
+                <span class="close-modal" onclick="hideInstructions()">&times;</span>
+                <h3><i class="fab fa-apple"></i> iOS Install</h3>
+                <ol>
+                    <li>
+                        Tap the <strong>Share</strong> button.
+                        <img src="files/ios_step_1.png" class="step-image" alt="Share Icon" onerror="this.style.display='none'">
+                    </li>
+                    <li>
+                        Scroll down (or tap 'more') and tap <strong>"Add to Home Screen"</strong>.
+                        <img src="files/ios_step_2.png" class="step-image" alt="Add to Home Screen" onerror="this.style.display='none'">
+                    </li>
+                    <li>
+                        Tap <strong>Add</strong> in the top right.
+                        <img src="files/ios_step_3.png" class="step-image" alt="Add Button" onerror="this.style.display='none'">
+                    </li>
+                </ol>
+                <br>
+                <p>You've successfully installed TopItUp! Open it and start using it!</p>
+            </div>
+        </div>
+
+        <div id="android-instructions" class="instruction-modal" style="display: none;">
+            <div class="instruction-content">
+                <span class="close-modal" onclick="hideInstructions()">&times;</span>
+                <h3><i class="fab fa-android"></i> Android Install</h3>
+                <ol>
+                    <li>
+                        Tap the <strong>Menu</strong> icon (three dots).
+                        <img src="files/android_step_1.png" class="step-image" alt="Menu Icon" onerror="this.style.display='none'">
+                    </li>
+                    <li>
+                        Tap <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.
+                        <img src="files/android_step_2.png" class="step-image" alt="Install Option" onerror="this.style.display='none'">
+                    </li>
+                    <li>
+                        Follow the prompt to install.
+                        <img src="files/android_step_3.png" class="step-image" alt="Install Prompt" onerror="this.style.display='none'">
+                    </li>
+                </ol>
+                <br>
+                <p>You've successfully installed TopItUp! Open it and start using it!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. REAL APP (Shown ONLY if standalone) -->
+    <div id="app-container" class="container" style="display: none;">
+        <!-- ... (Existing App Content) ... -->
         <div class="logo-container">
             <img src="files/full_logo.png?v=1.1" alt="TopItUp Logo">
             <div class="welcome-text">Track what matters to you</div>
@@ -542,7 +658,288 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         </div>
     </div>
     
+    <style>
+        #install-landing {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000; /* Fallback */
+            /* Grayish background as before */
+            background: linear-gradient(180deg, #1a1a1a 0%, #060606 100%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            color: white;
+            justify-content: space-between; /* Space out header, carousel, footer */
+        }
+        
+        .landing-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .landing-logo img {
+            width: 140px; /* Mas pequeñito */
+            height: auto;
+            margin-bottom: 12px;
+        }
+        
+        .landing-subtitle {
+            font-size: 1.1rem;
+            font-weight: 700; /* Negrita */
+            line-height: 1.4;
+            color: #ccc;
+            margin: 0;
+        }
+        
+        /* CAROUSEL STYLES - INFINITE SCROLL */
+        .screenshot-carousel-container {
+            width: 100%;
+            overflow: hidden;
+            padding: 20px 0;
+            position: relative;
+            /* Mobile: Gentle fade at very edges only */
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+        
+        /* Desktop: Sharp cutoff on sides */
+        @media (min-width: 768px) {
+            .screenshot-carousel-container {
+                mask-image: linear-gradient(to right, transparent 20%, black 30%, black 70%, transparent 80%);
+                -webkit-mask-image: linear-gradient(to right, transparent 20%, black 30%, black 70%, transparent 80%);
+            }
+        }
+
+        .screenshot-carousel {
+            display: flex;
+            gap: 16px;
+            width: max-content;
+            /* Infinite Scroll Animation */
+            animation: scroll 20s linear infinite;
+        }
+        
+        /* Pause on hover if desired, usually good for UX */
+        .screenshot-carousel:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                /* Moves half the width (the length of one full set of items) */
+                transform: translateX(calc(-50% - 8px)); /* 50% + half gap */
+            }
+        }
+        
+        .screenshot-item {
+            width: 180px; /* Small, consistent size on all devices */
+            aspect-ratio: 10/16;
+            height: auto;
+            flex-shrink: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            background: #222;
+        }
+        
+        .screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* MISSING FOOTER & BUTTON STYLES RESTORED */
+        .landing-footer {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .install-text {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 24px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        .landing-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .install-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #111;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .install-btn:hover {
+            background: #222;
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+        
+        .install-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* INSTRUCTION STEP IMAGES */
+        .step-image {
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            margin-left: 10px; /* Indented */
+            max-width: 250px; /* Slightly narrower too */
+            max-height: 50px; /* Approx height of 1.5 lines */
+            width: auto;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #333;
+            object-fit: contain; /* Keep aspect ratio intact */
+            background: #222;
+        }
+
+        /* BUTTON ICONS */
+        .btn-icon-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .btn-text {
+            white-space: nowrap;
+        }
+
+        /* MODAL FIXES */
+        .instruction-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 99999; /* Max Z-Index */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+        
+        .instruction-content {
+            background: #111;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            text-align: left;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s;
+        }
+        
+        .close-modal:hover {
+            color: #fff;
+        }
+
+        .instruction-content h3 {
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instruction-content ol {
+            padding-left: 20px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .instruction-content li {
+            margin-bottom: 12px;
+        }
+
+        /* Responsive adjustments */
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            /* No width override for carousel items - keep them small (180px) */
+            .landing-footer {
+                margin-top: auto;
+            }
+        }
+    </style>
+
     <script>
+        // STANDALONE DETECTION LOGIC
+        function isStandalone() {
+            // Check if standard standalone
+            if (window.matchMedia('(display-mode: standalone)').matches) return true;
+            
+            // Check iOS standalone
+            if (window.navigator.standalone === true) return true;
+            
+            // Check Android PWA referrer
+            if (document.referrer.includes('android-app://')) return true;
+            
+            // FOR DEVELOPMENT TESTING: Check for URL parameter ?standalone=true
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('standalone') === 'true') return true;
+            
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isStandalone()) {
+                document.getElementById('app-container').style.display = 'block';
+            } else {
+                document.getElementById('install-landing').style.display = 'flex';
+            }
+        });
+
+        // Instructions Modal Logic
+        function showInstructions(platform) {
+            document.getElementById(platform + '-instructions').style.display = 'flex';
+        }
+
+        function hideInstructions() {
+            document.querySelectorAll('.instruction-modal').forEach(el => el.style.display = 'none');
+        }
+
+        // --- EXISTING FORM LOGIC ---
         function showForm(formType) {
             // Hide all forms
             document.querySelectorAll('.form-content').forEach(form => {
