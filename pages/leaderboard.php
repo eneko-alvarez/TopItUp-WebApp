@@ -8,16 +8,6 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
 
 <div class="leaderboard-page">
     <h2><i class="fas fa-trophy"></i> My Leaderboards</h2>
-    
-   <!-- Join Leaderboard Section -->
-    <div class="leaderboard-join-section">
-        <h3>Join a Leaderboard</h3>
-        <p>Have an invite code? Enter it to join a leaderboard</p>
-        <form action="join_leaderboard.php" method="GET" class="inline-form">
-            <input type="text" name="code" placeholder="Enter code" required maxlength="20" style="flex: 1; text-transform: uppercase;">
-            <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Join</button>
-        </form>
-    </div>
 
     <!-- User's Leaderboards -->
     <?php if (empty($userLeaderboards)): ?>
@@ -62,8 +52,6 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-    
-    
 
      <!-- Create New Leaderboard -->
     <div class="leaderboard-create-section">
@@ -73,6 +61,17 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
             <i class="fas fa-plus"></i> Create Leaderboard
         </a>
     </div>
+
+    <!-- Join Leaderboard Section -->
+    <div class="leaderboard-join-section">
+        <h3>Join a Leaderboard</h3>
+        <p>Have an invite code? Enter it to join a leaderboard</p>
+        <form action="join_leaderboard.php" method="GET" class="inline-form">
+            <input type="text" name="code" placeholder="Enter code" required maxlength="20" style="flex: 1; text-transform: uppercase;">
+            <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Join</button>
+        </form>
+    </div>
+    
 </div>
 
 <script>

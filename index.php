@@ -486,17 +486,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <div class="screenshot-carousel-container">
             <div class="screenshot-carousel">
                 <!-- Original Items -->
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 1"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 2"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 3"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 4"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 5"></div>
+                <div class="screenshot-item"><img src="files/c4.png" alt="View 4"></div>
+                <div class="screenshot-item"><img src="files/c1.png" alt="View 1"></div>
+                <div class="screenshot-item"><img src="files/c2.png" alt="View 2"></div>
+                <div class="screenshot-item"><img src="files/c3.png" alt="View 3"></div>
+                <div class="screenshot-item"><img src="files/c5.png" alt="View 5"></div>
+                <div class="screenshot-item"><img src="files/c6.png" alt="View 6"></div>
                 <!-- Duplicated for Loop Effect -->
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 1"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 2"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 3"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 4"></div>
-                <div class="screenshot-item"><img src="files/c1_test.png" alt="View 5"></div>
+                <div class="screenshot-item"><img src="files/c4.png" alt="View 4"></div>
+                <div class="screenshot-item"><img src="files/c1.png" alt="View 1"></div>
+                <div class="screenshot-item"><img src="files/c2.png" alt="View 2"></div>
+                <div class="screenshot-item"><img src="files/c3.png" alt="View 3"></div>
+                <div class="screenshot-item"><img src="files/c5.png" alt="View 5"></div>
+                <div class="screenshot-item"><img src="files/c6.png" alt="View 6"></div>
             </div>
         </div>
         
