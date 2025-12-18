@@ -100,7 +100,7 @@ if (empty($countersToShow)) {
                         <?php if ($counter['last_date'] && $counter['last_hour']): ?>
                             <?= date('d/m/Y H:i', strtotime($counter['last_date'] . ' ' . $counter['last_hour'])) ?>
                         <?php else: ?>
-                            Never
+                            <?= t('increment.empty_history') ?>
                         <?php endif; ?>
                     </div>
                     <form method="POST" style="margin: 0;" class="increment-form">
@@ -119,8 +119,8 @@ if (empty($countersToShow)) {
         <!-- Recent Increments History with Delete Option -->
         <div class="increment-history-section" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #2a2a2a;">
             <h4 style="color: #ffffff; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-history"></i> Recent Activity
-                <span style="font-size: 12px; color: #808080; font-weight: normal;">(click <i class="fas fa-trash" style="font-size: 10px;"></i> to undo)</span>
+                <i class="fas fa-history"></i> <?= t('increment.history') ?>
+                <span style="font-size: 12px; color: #808080; font-weight: normal;">(<?= t('common.delete') ?> <i class="fas fa-trash" style="font-size: 10px;"></i>)</span>
             </h4>
             <?php
             // Get last 10 logs for this counter/group
@@ -149,7 +149,7 @@ if (empty($countersToShow)) {
             $recentLogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             if (empty($recentLogs)): ?>
-                <p style="color: #808080; font-style: italic; text-align: center; padding: 20px;">No records yet</p>
+                <p style="color: #808080; font-style: italic; text-align: center; padding: 20px;"><?= t('increment.empty_history') ?></p>
             <?php else: ?>
                 <div class="history-log-list" style="display: flex; flex-direction: column; gap: 8px;">
                     <?php foreach ($recentLogs as $log): ?>

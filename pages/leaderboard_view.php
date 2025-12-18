@@ -32,16 +32,16 @@ $rankings = getLeaderboardRankings($pdo, $leaderboard_id);
     <?php if (empty($rankings)): ?>
         <div class="empty-state">
             <i class="fas fa-users-slash" style="font-size: 48px; color: #ccc;"></i>
-            <p>No members yet. Share the invite code to get people to join!</p>
+            <p><?= t('leaderboard.view.empty') ?></p>
         </div>
     <?php else: ?>
         <div class="rankings-table">
             <table>
                 <thead>
                     <tr>
-                        <th>Rank</th>
-                        <th>User</th>
-                        <th>Count</th>
+                        <th><?= t('leaderboard.view.rank') ?></th>
+                        <th><?= t('common.user') ?></th>
+                        <th><?= t('leaderboard.view.count') ?></th>
                     </tr>
                 </thead>
                 <tbody>

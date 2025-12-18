@@ -7,13 +7,13 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
 ?>
 
 <div class="leaderboard-page">
-    <h2><i class="fas fa-trophy"></i> My Leaderboards</h2>
+    <h2><i class="fas fa-trophy"></i> <?= t('leaderboard.my_leaderboards') ?></h2>
 
     <!-- User's Leaderboards -->
     <?php if (empty($userLeaderboards)): ?>
         <div class="empty-state">
             <i class="fas fa-trophy" style="font-size: 48px; color: #ccc;"></i>
-            <p>No leaderboards yet. Create one or join using an invite code!</p>
+            <p><?= t('leaderboard.empty') ?></p>
         </div>
     <?php else: ?>
         <div class="leaderboards-grid">
@@ -28,25 +28,25 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
                     
                     <div class="leaderboard-stats">
                         <div class="stat">
-                            <span class="stat-label">Tracking:</span>
+                            <span class="stat-label"><?= t('leaderboard.view.settings') ?>:</span>
                             <span class="stat-value">
                                 <?php if ($leaderboard['counter_name']): ?>
                                     <i class="fas fa-bullseye"></i> <?= htmlspecialchars($leaderboard['counter_name']) ?>
                                 <?php elseif ($leaderboard['group_name']): ?>
                                     <i class="fas fa-layer-group"></i> <?= htmlspecialchars($leaderboard['group_name']) ?>
                                 <?php else: ?>
-                                    <i class="fas fa-question"></i> Not configured
+                                    <i class="fas fa-question"></i> <?= t('common.error') ?>
                                 <?php endif; ?>
                             </span>
                         </div>
                     </div>
                     
                     <a href="?page=leaderboard_view&id=<?= $leaderboard['id'] ?>" class="btn-view">
-                        <i class="fas fa-chart-line"></i> View Rankings
+                        <i class="fas fa-chart-line"></i> <?= t('leaderboard.view.rankings') ?>
                     </a>
                     
                     <a href="?page=leaderboard_settings&id=<?= $leaderboard['id'] ?>" class="btn-settings" style="display: block; width: 100%; text-align: center; padding: 10px; background: #2a2a2a; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px; border: 1px solid #404040;">
-                        <i class="fas fa-cog"></i> Settings
+                        <i class="fas fa-cog"></i> <?= t('leaderboard.view.settings') ?>
                     </a>
                 </div>
             <?php endforeach; ?>
@@ -55,20 +55,20 @@ $userLeaderboards = getUserLeaderboards($pdo, $user_id);
 
      <!-- Create New Leaderboard -->
     <div class="leaderboard-create-section">
-        <h3>Create New Leaderboard</h3>
-        <p style="margin: 10px 0; color: #a0a0a0;">Create a private leaderboard and invite your friends to compete!</p>
+        <h3><?= t('leaderboard.create.title') ?></h3>
+        <p style="margin: 10px 0; color: #a0a0a0;"><?= t('leaderboard.empty') ?></p>
         <a href="create_leaderboard.php" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none;">
-            <i class="fas fa-plus"></i> Create Leaderboard
+            <i class="fas fa-plus"></i> <?= t('leaderboard.create.submit') ?>
         </a>
     </div>
 
     <!-- Join Leaderboard Section -->
     <div class="leaderboard-join-section">
-        <h3>Join a Leaderboard</h3>
-        <p>Have an invite code? Enter it to join a leaderboard</p>
+        <h3><?= t('leaderboard.join.title') ?></h3>
+        <p><?= t('leaderboard.join.code') ?>?</p>
         <form action="join_leaderboard.php" method="GET" class="inline-form">
-            <input type="text" name="code" placeholder="Enter code" required maxlength="20" style="flex: 1; text-transform: uppercase;">
-            <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Join</button>
+            <input type="text" name="code" placeholder="<?= t('leaderboard.join.code_placeholder') ?>" required maxlength="20" style="flex: 1; text-transform: uppercase;">
+            <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> <?= t('leaderboard.join.submit') ?></button>
         </form>
     </div>
     

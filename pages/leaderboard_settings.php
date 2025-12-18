@@ -114,18 +114,18 @@ $userGroups = getUserGroups($pdo, $user_id);
 
 <div class="leaderboard-settings-page">
     <div class="settings-header">
-        <h2><i class="fas fa-cog"></i> <?= htmlspecialchars($leaderboard['name']) ?> - Settings</h2>
+        <h2><i class="fas fa-cog"></i> <?= htmlspecialchars($leaderboard['name']) ?> - <?= t('leaderboard.view.settings') ?></h2>
     </div>
     
     
     <!-- Invite Code Section (Creator only) -->
     <?php if ($isCreator): ?>
     <div class="settings-section">
-        <h3>Invite Code</h3>
+        <h3><?= t('leaderboard.settings.invite_code') ?></h3>
         <div class="invite-code-display">
             <code><?= htmlspecialchars($leaderboard['invite_code']) ?></code>
             <button onclick="copyInviteCode('<?= htmlspecialchars($leaderboard['invite_code']) ?>')" class="btn-copy">
-                <i class="fas fa-copy"></i> Copy
+                <i class="fas fa-copy"></i> <?= t('common.copy') ?>
             </button>
         </div>
     </div>
@@ -133,9 +133,9 @@ $userGroups = getUserGroups($pdo, $user_id);
     
     <!-- Members List -->
     <div class="settings-section">
-        <h3>Members (<?= count($members) ?>)</h3>
+        <h3><?= t('leaderboard.settings.members') ?> (<?= count($members) ?>)</h3>
         <?php if (empty($members)): ?>
-            <p style="color: #999;">No members yet.</p>
+            <p style="color: #999;"><?= t('leaderboard.settings.no_members') ?></p>
         <?php else: ?>
             <div class="members-list">
                 <?php foreach ($members as $member): ?>
@@ -147,13 +147,13 @@ $userGroups = getUserGroups($pdo, $user_id);
                             <?php endif; ?>
                             <br>
                             <small style="color: #666;">
-                                Tracking: 
+                                <?= t('leaderboard.view.settings') ?>: 
                                 <?php if ($member['counter_name']): ?>
                                     <i class="fas fa-bullseye"></i> <?= htmlspecialchars($member['counter_name']) ?>
                                 <?php elseif ($member['group_name']): ?>
                                     <i class="fas fa-layer-group"></i> <?= htmlspecialchars($member['group_name']) ?>
                                 <?php else: ?>
-                                    <i class="fas fa-question"></i> Not configured
+                                    <i class="fas fa-question"></i> <?= t('common.error') ?>
                                 <?php endif; ?>
                             </small>
                         </div>
@@ -166,22 +166,22 @@ $userGroups = getUserGroups($pdo, $user_id);
     <!-- Time Span Section (Creator only) -->
     <?php if ($isCreator): ?>
     <div class="settings-section">
-        <h3>Time Span Filter</h3>
-        <p style="color: #666; margin-bottom: 15px;">Only logs within this date range will count towards rankings.</p>
+        <h3><?= t('leaderboard.settings.timespan.title') ?></h3>
+        <p style="color: #666; margin-bottom: 15px;"><?= t('leaderboard.settings.timespan.description') ?></p>
         <form method="POST" class="timespan-form">
             <input type="hidden" name="action" value="update_timespan">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
-                    <label>Start Date:</label>
+                    <label><?= t('leaderboard.settings.timespan.start') ?>:</label>
                     <input type="date" name="start_date" value="<?= htmlspecialchars($leaderboard['start_date']) ?>" required>
                 </div>
                 <div class="form-group">
-                    <label>End Date:</label>
+                    <label><?= t('leaderboard.settings.timespan.end') ?>:</label>
                     <input type="date" name="end_date" value="<?= htmlspecialchars($leaderboard['end_date']) ?>" required>
                 </div>
             </div>
             <button type="submit" class="btn-primary">
-                <i class="fas fa-calendar"></i> Update Time Span
+                <i class="fas fa-calendar"></i> <?= t('leaderboard.settings.timespan.submit') ?>
             </button>
         </form>
     </div>
@@ -190,22 +190,22 @@ $userGroups = getUserGroups($pdo, $user_id);
     <!-- Change Source Section -->
     <?php if ($myMembership): ?>
         <div class="settings-section">
-            <h3>Change What You Track</h3>
+            <h3><?= t('leaderboard.settings.change_tracking') ?></h3>
             <form method="POST" class="change-source-form" onsubmit="return prepareSourceSubmit()">
                 <input type="hidden" name="action" value="change_source">
                 <input type="hidden" name="source_id" id="finalSourceId" value="">
                 
                 <div class="form-group">
-                    <label>Track:</label>
+                    <label><?= t('common.track') ?>:</label>
                     <select name="source_type" id="sourceType" required onchange="updateSourceOptions()">
-                        <option value="">-- Select Type --</option>
-                        <option value="counter" <?= $myMembership['counter_id'] ? 'selected' : '' ?>>Single Counter</option>
-                        <option value="group" <?= $myMembership['group_id'] ? 'selected' : '' ?>>Counter Group</option>
+                        <option value="">-- <?= t('common.select') ?> --</option>
+                        <option value="counter" <?= $myMembership['counter_id'] ? 'selected' : '' ?>><?= t('leaderboard.settings.single_counter') ?></option>
+                        <option value="group" <?= $myMembership['group_id'] ? 'selected' : '' ?>><?= t('leaderboard.settings.counter_group') ?></option>
                     </select>
                 </div>
                 
                 <div class="form-group" id="counterSelect" style="display: <?= $myMembership['counter_id'] ? 'block' : 'none' ?>;">
-                    <label>Select Counter:</label>
+                    <label><?= t('leaderboard.settings.select_counter') ?>:</label>
                     <select id="counterOptions">
                         <?php foreach ($userCounters as $counter): ?>
                             <option value="<?= $counter['id'] ?>" <?= $counter['id'] == $myMembership['counter_id'] ? 'selected' : '' ?>>
@@ -216,7 +216,7 @@ $userGroups = getUserGroups($pdo, $user_id);
                 </div>
                 
                 <div class="form-group" id="groupSelect" style="display: <?= $myMembership['group_id'] ? 'block' : 'none' ?>;">
-                    <label>Select Group:</label>
+                    <label><?= t('leaderboard.settings.select_group') ?>:</label>
                     <select id="groupOptions">
                         <?php foreach ($userGroups as $group): ?>
                             <option value="<?= $group['id'] ?>" <?= $group['id'] == $myMembership['group_id'] ? 'selected' : '' ?>>
@@ -227,7 +227,7 @@ $userGroups = getUserGroups($pdo, $user_id);
                 </div>
                 
                 <button type="submit" class="btn-primary">
-                    <i class="fas fa-save"></i> Save Changes
+                    <i class="fas fa-save"></i> <?= t('common.save') ?>
                 </button>
             </form>
         </div>
@@ -235,14 +235,14 @@ $userGroups = getUserGroups($pdo, $user_id);
     
     <!-- Leave Leaderboard -->
     <div class="settings-section danger-zone">
-        <h3>Danger Zone</h3>
+        <h3><?= t('leaderboard.settings.danger_zone') ?></h3>
         <p style="color: #666; margin-bottom: 15px;">
-            Leaving the leaderboard will remove you from the rankings. You'll need a new invite code to rejoin.
+            <?= t('leaderboard.settings.leave_message') ?>
         </p>
         <form method="POST" onsubmit="return confirm('Are you sure you want to leave this leaderboard?');">
             <input type="hidden" name="action" value="leave_leaderboard">
             <button type="submit" class="btn-danger">
-                <i class="fas fa-sign-out-alt"></i> Leave Leaderboard
+                <i class="fas fa-sign-out-alt"></i> <?= t('leaderboard.settings.leave') ?>
             </button>
         </form>
     </div>

@@ -88,42 +88,42 @@ foreach ($groups as $group) {
 
 <div class="settings-page">
     <div class="settings-section">
-        <h3><i class="fas fa-plus-square"></i> Create Counter</h3>
+        <h3><i class="fas fa-plus-square"></i> <?= t('settings.create_counter.title') ?></h3>
         <form method="POST" class="settings-form">
             <input type="hidden" name="action" value="create_counter">
             <div class="form-group">
-                <label for="counter_name">Counter Name:</label>
-                <input type="text" id="counter_name" name="name" required placeholder="e.g.: Gym Sessions">
+                <label for="counter_name"><?= t('settings.create_counter.name') ?></label>
+                <input type="text" id="counter_name" name="name" required placeholder="<?= t('settings.create_counter.name_placeholder') ?>">
             </div>
             <div class="form-group">
-                <label for="counter_color">Color:</label>
+                <label for="counter_color"><?= t('settings.create_counter.color') ?></label>
                 <input type="color" id="counter_color" name="color" value="#667eea" class="color-picker">
             </div>
 
-            <button type="submit" class="btn-primary">Create Counter</button>
+            <button type="submit" class="btn-primary"><?= t('settings.create_counter.submit') ?></button>
         </form>
     </div>
 
     <div class="settings-section">
-        <h3><i class="fas fa-layer-group"></i> Create New Group</h3>
+        <h3><i class="fas fa-layer-group"></i> <?= t('settings.create_group.title') ?></h3>
         <form method="POST" class="settings-form">
             <input type="hidden" name="action" value="create_group">
             <div class="form-group">
-                <label for="group_name">Group Name:</label>
-                <input type="text" id="group_name" name="name" required placeholder="e.g.: Drinks">
+                <label for="group_name"><?= t('settings.create_group.name') ?></label>
+                <input type="text" id="group_name" name="name" required placeholder="<?= t('settings.create_group.name_placeholder') ?>">
             </div>
             <div class="form-group">
-                <label for="group_color">Color:</label>
+                <label for="group_color"><?= t('settings.create_group.color') ?></label>
                 <input type="color" id="group_color" name="color" value="#667eea" class="color-picker">
             </div>
-            <button type="submit" class="btn-primary">Create Group</button>
+            <button type="submit" class="btn-primary"><?= t('settings.create_group.submit') ?></button>
         </form>
     </div>
     
     <div class="settings-section">
-        <h3><i class="fas fa-tasks"></i> My Groups</h3>
+        <h3><i class="fas fa-tasks"></i> <?= t('settings.my_groups.title') ?></h3>
         <?php if (empty($groupsWithCounters)): ?>
-            <p class="empty-message">You have no groups created.</p>
+            <p class="empty-message"><?= t('settings.my_groups.empty') ?></p>
         <?php else: ?>
             <?php foreach ($groupsWithCounters as $data): ?>
                 <div class="group-management-card">
@@ -137,8 +137,8 @@ foreach ($groups as $group) {
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete_group">
                                 <input type="hidden" name="group_id" value="<?= $data['group']['id'] ?>">
-                                <button type="submit" class="btn-danger" onclick="return confirm('Delete group? Counters will be kept.')">
-                                    <i class="fas fa-trash"></i> Delete
+                                <button type="submit" class="btn-danger" onclick="return confirm('<?= t('settings.my_groups.delete') ?>?')">
+                                    <i class="fas fa-trash"></i> <?= t('settings.my_groups.delete') ?>
                                 </button>
                             </form>
                         </div>
@@ -174,7 +174,7 @@ foreach ($groups as $group) {
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <p class="empty-group-counters">No counters assigned</p>
+                        <p class="empty-group-counters"><?= t('settings.my_groups.no_counters') ?></p>
                     <?php endif; ?>
                     
                     <!-- Add Counter Form for this specific group -->
@@ -184,7 +184,7 @@ foreach ($groups as $group) {
                                 <input type="hidden" name="action" value="assign_counter">
                                 <input type="hidden" name="group_id" value="<?= $data['group']['id'] ?>">
                                 <select name="counter_id" required style="flex: 1; padding: 8px; border: 2px solid #e9ecef; border-radius: 6px; font-size: 14px;">
-                                    <option value="">+ Add Counter</option>
+                                    <option value=""><?= t('settings.my_groups.add_counters') ?></option>
                                     <?php foreach ($unassignedCounters as $counter): ?>
                                         <option value="<?= $counter['id'] ?>">
                                             <?= htmlspecialchars($counter['name']) ?> (<?= $counter['count'] ?>)
@@ -192,7 +192,7 @@ foreach ($groups as $group) {
                                     <?php endforeach; ?>
                                 </select>
                                 <button type="submit" class="btn-primary" style="padding: 8px 16px; white-space: nowrap;">
-                                    <i class="fas fa-plus"></i> Add
+                                    <i class="fas fa-plus"></i> <?= t('common.save') ?>
                                 </button>
                             </form>
                         </div>
@@ -204,9 +204,9 @@ foreach ($groups as $group) {
     
     
     <div class="settings-section">
-        <h3><i class="fas fa-unlink"></i> Single Counters</h3>
+        <h3><i class="fas fa-unlink"></i> <?= t('settings.my_counters.title') ?></h3>
         <?php if (empty($unassignedCounters)): ?>
-            <p class="empty-message">All counters are assigned to groups.</p>
+            <p class="empty-message"><?= t('settings.my_counters.unassigned') ?></p>
         <?php else: ?>
             <div class="unassigned-counters-list">
                 <?php foreach ($unassignedCounters as $counter): ?>
@@ -229,8 +229,8 @@ foreach ($groups as $group) {
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete_counter">
                                 <input type="hidden" name="counter_id" value="<?= $counter['id'] ?>">
-                                <button type="submit" class="btn-danger" onclick="return confirm('Delete counter?')">
-                                    <i class="fas fa-trash"></i>
+                                <button type="submit" class="btn-danger" onclick="return confirm('<?= t('common.delete') ?>?')">
+                                    <i class="fas fa-trash"></i> <?= t('common.delete') ?>
                                 </button>
                             </form>
                         </div>
@@ -243,8 +243,21 @@ foreach ($groups as $group) {
     <div class="settings-section">
         <div class="logout-container">
             <p>User: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></p>
+            
+            <!-- Language Switcher for Mobile -->
+            <div class="settings-lang-switcher" style="margin: 1.5rem 0;">
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="lang-switch-btn <?= currentLang() === 'en' ? 'active' : '' ?>" onclick="switchLanguage('en')">
+                        🇬🇧 English
+                    </button>
+                    <button class="lang-switch-btn <?= currentLang() === 'es' ? 'active' : '' ?>" onclick="switchLanguage('es')">
+                        🇪🇸 Español
+                    </button>
+                </div>
+            </div>
+            
             <a href="logout.php" class="btn-danger" style="display: inline-block; text-decoration: none; margin-top: 1rem;">
-                <i class="fas fa-sign-out-alt"></i> Log Out
+                <i class="fas fa-sign-out-alt"></i> <?= t('nav.logout') ?>
             </a>
         </div>
     </div>

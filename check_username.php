@@ -22,13 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $count = $stmt->fetchColumn();
         
         if ($count > 0) {
-            echo json_encode(['available' => false, 'message' => 'Username already taken']);
+            echo json_encode(['available' => false, 'message' => t('auth.register.username_check.taken')]);
         } else {
-            echo json_encode(['available' => true, 'message' => 'Username available']);
+            echo json_encode(['available' => true, 'message' => t('auth.register.username_check.available')]);
         }
     } catch(PDOException $e) {
-        echo json_encode(['available' => false, 'message' => 'Error checking username']);
+        echo json_encode(['available' => false, 'message' => t('common.error')]);
     }
 } else {
-    echo json_encode(['available' => false, 'message' => 'Invalid request']);
+    echo json_encode(['available' => false, 'message' => t('common.error')]);
 }

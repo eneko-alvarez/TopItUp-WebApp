@@ -33,14 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
     
     // Validar que las contraseñas coincidan
     if ($password !== $confirm_password) {
-        $message = "Passwords do not match.";
+        $message = t('auth.errors.passwords_mismatch');
         $_SESSION['error_message'] = $message;
         $_SESSION['form_username'] = $username;
         $_SESSION['form_email'] = $email;
         header('Location: index.php?form=register');
         exit;
     } elseif (strlen($password) < 8) {
-        $message = "Password must be at least 8 characters.";
+        $message = t('auth.errors.password_min_length');
         $_SESSION['error_message'] = $message;
         $_SESSION['form_username'] = $username;
         $_SESSION['form_email'] = $email;
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
             exit;
         } catch(PDOException $e) {
             $pdo->rollBack();
-            $message = "Username or email already exists.";
+            $message = t('auth.errors.username_exists');
             $_SESSION['error_message'] = $message;
             $_SESSION['form_username'] = $username;
             $_SESSION['form_email'] = $email;
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             header("Location: dashboard.php");
             exit;
         } else {
-            $message = "Invalid credentials.";
+            $message = t('auth.errors.invalid_credentials');
         }
     }
 }
@@ -180,13 +180,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= currentLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopItUp 🎉 Count Everything!</title>
-    <meta name="description" content="Who said counting can't be fun? Track your beers, coffees, workouts, or literally anything. Compete with friends and see who's really winning at life 🏆">
-    <meta name="keywords" content="counter app, habit tracker, activity tracker, leaderboard, count drinks, track habits, pwa, productivity">
+    <title><?= t('meta.title') ?></title>
+    <meta name="description" content="<?= t('meta.description') ?>">
+    <meta name="keywords" content="<?= t('meta.keywords') ?>">
     <meta name="robots" content="index, follow">
     <meta name="author" content="TopItUp Team">
     <link rel="canonical" href="https://topitup.party/">
@@ -194,8 +194,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://topitup.party/">
-    <meta property="og:title" content="TopItUp - Track What Matters">
-    <meta property="og:description" content="Beers? Gym sessions? Days without uni? Track anything, compete with friends, and actually have fun doing it. It's a party! 🎊">
+    <meta property="og:title" content="<?= t('meta.og_title') ?>">
+    <meta property="og:description" content="<?= t('meta.og_description') ?>">
     <meta property="og:image" content="https://topitup.party/files/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -203,8 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://topitup.party/">
-    <meta property="twitter:title" content="TopItUp - Track What Matters">
-    <meta property="twitter:description" content="Beers? Gym sessions? Days without uni? Track anything, compete with friends, and actually have fun doing it. It's a party! 🎊">
+    <meta property="twitter:title" content="<?= t('meta.og_title') ?>">
+    <meta property="twitter:description" content="<?= t('meta.og_description') ?>">
     <meta property="twitter:image" content="https://topitup.party/files/logo.png">
     <!-- Manifest para Android/Chromium y soporte general PWA -->
     <link rel="manifest" href="/manifest.webmanifest">
@@ -469,9 +469,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 padding: 16px;
             }
         }
+        
+        /* Language Switcher */
+        .lang-switcher {
+            position: fixed;
+            top: 45px;
+            right: 15px;
+            z-index: 10001;
+            display: flex;
+            gap: 4px;
+            background: #111;
+            border-radius: 50px;
+            padding: 3px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .lang-btn {
+            padding: 6px 10px;
+            background: transparent;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .lang-btn.active {
+            background: #667eea;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .lang-btn:hover:not(.active) {
+            color: #fff;
+            background: #1a1a1a;
+        }
+        
+        @media (max-width: 480px) {
+            .lang-switcher {
+                top: 10px;
+                right: 10px;
+                padding: 2px;
+                gap: 2px;
+            }
+            
+            .lang-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+                gap: 3px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Language Switcher (visible on both landing and app) -->
+    <div class="lang-switcher" id="langSwitcher">
+        <button class="lang-btn <?= currentLang() === 'en' ? 'active' : '' ?>" onclick="switchLanguage('en')">
+            🇬🇧 EN
+        </button>
+        <button class="lang-btn <?= currentLang() === 'es' ? 'active' : '' ?>" onclick="switchLanguage('es')">
+            🇪🇸 ES
+        </button>
+    </div>
+    
     <!-- 1. LANDING PAGE (Shown if NOT standalone) -->
     <div id="install-landing" style="display: none;">
         <div class="landing-header">
@@ -479,8 +545,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 <img src="files/full_logo.png?v=1.1" alt="TopItUp">
             </div>
             <h2 class="landing-subtitle">
-                Track what matters.<br>
-                Right from your pocket.
+                <?= t('landing.subtitle') ?>
             </h2>
         </div>
 
@@ -506,17 +571,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         
         <div class="landing-footer">
             <br>
-            <p class="install-text">Easier installation than from the<br>App Store or Google Play Store</p>
+            <p class="install-text"><?= t('landing.install_text') ?></p>
             
             <div class="landing-buttons">
                 <!-- Added logo slots as requested -->
                 <button onclick="showInstructions('ios')" class="install-btn ios-btn">
                     <img src="files/ios_logo.png" class="btn-icon-img" alt="Safari" onerror="this.style.display='none'"> 
-                    <span class="btn-text">For iOS</span>
+                    <span class="btn-text"><?= t('landing.ios_button') ?></span>
                 </button>
                 <button onclick="showInstructions('android')" class="install-btn android-btn">
                     <img src="files/android_logo.png" class="btn-icon-img" alt="Chrome" onerror="this.style.display='none'">
-                    <span class="btn-text">For Android</span>
+                    <span class="btn-text"><?= t('landing.android_button') ?></span>
                 </button>
             </div>
         </div>
@@ -525,46 +590,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <div id="ios-instructions" class="instruction-modal" style="display: none;">
             <div class="instruction-content">
                 <span class="close-modal" onclick="hideInstructions()">&times;</span>
-                <h3><i class="fab fa-apple"></i> iOS Install</h3>
+                <h3><i class="fab fa-apple"></i> <?= t('landing.ios_instructions.title') ?></h3>
                 <ol>
                     <li>
-                        Tap the <strong>Share</strong> button.
+                        <?= t('landing.ios_instructions.step1') ?>
                         <img src="files/ios_step_1.png" class="step-image" alt="Share Icon" onerror="this.style.display='none'">
                     </li>
                     <li>
-                        Scroll down (or tap 'more') and tap <strong>"Add to Home Screen"</strong>.
+                        <?= t('landing.ios_instructions.step2') ?>
                         <img src="files/ios_step_2.png" class="step-image" alt="Add to Home Screen" onerror="this.style.display='none'">
                     </li>
                     <li>
-                        Tap <strong>Add</strong> in the top right.
+                        <?= t('landing.ios_instructions.step3') ?>
                         <img src="files/ios_step_3.png" class="step-image" alt="Add Button" onerror="this.style.display='none'">
                     </li>
                 </ol>
                 <br>
-                <p>You've successfully installed TopItUp! Open it and start using it!</p>
+                <p><?= t('landing.ios_instructions.success') ?></p>
             </div>
         </div>
 
         <div id="android-instructions" class="instruction-modal" style="display: none;">
             <div class="instruction-content">
                 <span class="close-modal" onclick="hideInstructions()">&times;</span>
-                <h3><i class="fab fa-android"></i> Android Install</h3>
+                <h3><i class="fab fa-android"></i> <?= t('landing.android_instructions.title') ?></h3>
                 <ol>
                     <li>
-                        Tap the <strong>Menu</strong> icon (three dots).
+                        <?= t('landing.android_instructions.step1') ?>
                         <img src="files/android_step_1.png" class="step-image" alt="Menu Icon" onerror="this.style.display='none'">
                     </li>
                     <li>
-                        Tap <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.
+                        <?= t('landing.android_instructions.step2') ?>
                         <img src="files/android_step_2.png" class="step-image" alt="Install Option" onerror="this.style.display='none'">
                     </li>
                     <li>
-                        Follow the prompt to install.
+                        <?= t('landing.android_instructions.step3') ?>
                         <img src="files/android_step_3.png" class="step-image" alt="Install Prompt" onerror="this.style.display='none'">
                     </li>
                 </ol>
                 <br>
-                <p>You've successfully installed TopItUp! Open it and start using it!</p>
+                <p><?= t('landing.android_instructions.success') ?></p>
             </div>
         </div>
     </div>
@@ -574,7 +639,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <!-- ... (Existing App Content) ... -->
         <div class="logo-container">
             <img src="files/full_logo.png?v=1.1" alt="TopItUp Logo">
-            <div class="welcome-text">Track what matters to you</div>
+            <div class="welcome-text"><?= t('auth.welcome_text') ?></div>
         </div>
         
         <?php if ($message): ?>
@@ -584,8 +649,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <?php endif; ?>
         
         <div class="form-switcher">
-            <button class="switch-btn <?php echo $active_form === 'login' ? 'active' : ''; ?>" onclick="showForm('login')">Sign In</button>
-            <button class="switch-btn <?php echo $active_form === 'register' ? 'active' : ''; ?>" onclick="showForm('register')">Sign Up</button>
+            <button class="switch-btn <?php echo $active_form === 'login' ? 'active' : ''; ?>" onclick="showForm('login')"><?= t('auth.login.title') ?></button>
+            <button class="switch-btn <?php echo $active_form === 'register' ? 'active' : ''; ?>" onclick="showForm('register')"><?= t('auth.register.title') ?></button>
         </div>
         
         <!-- Login Form -->
@@ -594,14 +659,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 <input type="hidden" name="action" value="login">
                 
                 <div class="form-group">
-                    <label for="login-username">Username</label>
-                    <input type="text" id="login-username" name="username" placeholder="Enter your username" required autofocus>
+                    <label for="login-username"><?= t('auth.login.username') ?></label>
+                    <input type="text" id="login-username" name="username" placeholder="<?= t('auth.login.username_placeholder') ?>" required autofocus>
                 </div>
                 
                 <div class="form-group">
-                    <label for="login-password">Password</label>
+                    <label for="login-password"><?= t('auth.login.password') ?></label>
                     <div class="password-wrapper">
-                        <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                        <input type="password" id="login-password" name="password" placeholder="<?= t('auth.login.password_placeholder') ?>" required>
                         <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
                             <svg id="eye-icon-login-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -611,7 +676,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">Sign In</button>
+                <button type="submit" class="submit-btn"><?= t('auth.login.submit') ?></button>
             </form>
         </div>
         
@@ -621,20 +686,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 <input type="hidden" name="action" value="register">
                 
                 <div class="form-group">
-                    <label for="register-username">Username</label>
-                    <input type="text" id="register-username" name="username" placeholder="Choose a username" value="<?php echo htmlspecialchars($form_username); ?>" required autocomplete="off">
+                    <label for="register-username"><?= t('auth.register.username') ?></label>
+                    <input type="text" id="register-username" name="username" placeholder="<?= t('auth.register.username_placeholder') ?>" value="<?php echo htmlspecialchars($form_username); ?>" required autocomplete="off">
                     <div id="username-status" class="username-status"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-email">Email</label>
-                    <input type="email" id="register-email" name="email" placeholder="Enter your email" value="<?php echo htmlspecialchars($form_email); ?>" required>
+                    <label for="register-email"><?= t('auth.register.email') ?></label>
+                    <input type="email" id="register-email" name="email" placeholder="<?= t('auth.register.email_placeholder') ?>" value="<?php echo htmlspecialchars($form_email); ?>" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-password">Password</label>
+                    <label for="register-password"><?= t('auth.register.password') ?></label>
                     <div class="password-wrapper">
-                        <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+                        <input type="password" id="register-password" name="password" placeholder="<?= t('auth.register.password_placeholder') ?>" required>
                         <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
                             <svg id="eye-icon-register-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -645,9 +710,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-confirm-password">Confirm Password</label>
+                    <label for="register-confirm-password"><?= t('auth.register.confirm_password') ?></label>
                     <div class="password-wrapper">
-                        <input type="password" id="register-confirm-password" name="confirm_password" placeholder="Confirm your password" required>
+                        <input type="password" id="register-confirm-password" name="confirm_password" placeholder="<?= t('auth.register.confirm_password_placeholder') ?>" required>
                         <button type="button" class="password-toggle" onclick="togglePassword('register-confirm-password')">
                             <svg id="eye-icon-register-confirm-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -657,7 +722,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">Create Account</button>
+                <button type="submit" class="submit-btn"><?= t('auth.register.submit') ?></button>
             </form>
         </div>
     </div>
@@ -919,9 +984,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             // Check Android PWA referrer
             if (document.referrer.includes('android-app://')) return true;
             
-            // FOR DEVELOPMENT TESTING: Check for URL parameter ?standalone=true
+            // DEVELOPMENT MODE: Allow ?standalone=true only in dev environment
+            <?php if (defined('DEVELOPMENT_MODE') && DEVELOPMENT_MODE): ?>
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('standalone') === 'true') return true;
+            <?php endif; ?>
             
             return false;
         }
@@ -983,7 +1050,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                         <svg class="username-status-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>At least 3 characters required</span>
+                        <span><?= t('auth.register.username_check.min_length') ?></span>
                     `;
                     usernameStatus.className = 'username-status unavailable';
                     return;
@@ -994,7 +1061,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                     <svg class="username-status-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    <span>Checking...</span>
+                    <span><?= t('auth.register.username_check.checking') ?></span>
                 `;
                 usernameStatus.className = 'username-status checking';
                 
@@ -1056,6 +1123,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 `;
             }
+        }
+    </script>
+    <script>
+        // Language Switcher Function
+        function switchLanguage(lang) {
+            // Reload page with lang parameter
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
         }
     </script>
     <script>

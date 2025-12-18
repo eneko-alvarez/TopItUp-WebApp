@@ -27,11 +27,11 @@ try {
 ?>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= currentLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopItUp Dashboard</title>
+    <title><?= t('dashboard.title') ?></title>
     <link rel="icon" type="image/png" href="files/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="style.css?v=1.2">
@@ -95,33 +95,43 @@ try {
         <div class="sidebar" id="sidebar-section">
             <div class="sidebar-header">
                 <h1>TopItUp</h1>
-                <p>2026 WRAP :)</p>
+                <p><?= t('dashboard.subtitle') ?></p>
             </div>
             <nav class="sidebar-nav">
                 <a href="?page=leaderboard" class="<?= $page === 'leaderboard' ? 'active' : '' ?>" id="nav-leaderboard">
-                    <i class="fas fa-trophy"></i> Leaderboard
+                    <i class="fas fa-trophy"></i> <?= t('nav.leaderboard') ?>
                 </a>
                 <a href="?page=dashboard" class="<?= $page === 'dashboard' ? 'active' : '' ?>" id="nav-dashboard">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home"></i> <?= t('nav.dashboard') ?>
                 </a>
                 <a href="?page=settings" class="<?= $page === 'settings' ? 'active' : '' ?>" id="nav-settings">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog"></i> <?= t('nav.settings') ?>
                 </a>
+                
+                <!-- Language Switcher in Sidebar -->
+                <div class="sidebar-lang-switcher">
+                    <button class="sidebar-lang-btn <?= currentLang() === 'en' ? 'active' : '' ?>" onclick="switchLanguage('en')">
+                        🇬🇧 EN
+                    </button>
+                    <button class="sidebar-lang-btn <?= currentLang() === 'es' ? 'active' : '' ?>" onclick="switchLanguage('es')">
+                        🇪🇸 ES
+                    </button>
+                </div>
             </nav>
         </div>
 
         <div class="bottom-menu" id="bottom-nav">
             <a href="?page=leaderboard" class="<?= $page === 'leaderboard' ? 'active' : '' ?>" id="mobile-nav-leaderboard">
                 <i class="fas fa-trophy"></i>
-                Leaderboard
+                <?= t('nav.leaderboard') ?>
             </a>
             <a href="?page=dashboard" class="<?= $page === 'dashboard' ? 'active' : '' ?>" id="mobile-nav-dashboard">
                 <i class="fas fa-home"></i>
-                Dashboard
+                <?= t('nav.dashboard') ?>
             </a>
             <a href="?page=settings" class="<?= $page === 'settings' ? 'active' : '' ?>" id="mobile-nav-settings">
                 <i class="fas fa-cog"></i>
-                Settings
+                <?= t('nav.settings') ?>
             </a>
         </div>
 
@@ -131,7 +141,7 @@ try {
             if (file_exists($page_file)) {
                 include $page_file;
             } else {
-                echo "<p>Page not found.</p>";
+                echo "<p>" . t('common.page_not_found') . "</p>";
             }
             ?>
         </div>
@@ -169,6 +179,16 @@ try {
         const tourStep = <?= $tourStep ?>;
         initTour(currentPage, tourStep);
         <?php endif; ?>
+    </script>
+    <script>
+        // Language Switcher Function
+        function switchLanguage(lang) {
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            url.searchParams.delete('page'); // Keep on same page
+            url.searchParams.delete('tour_step');
+            window.location.href = url.toString();
+        }
     </script>
 </body>
 </html>
