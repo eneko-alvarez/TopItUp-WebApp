@@ -34,7 +34,7 @@ try {
     <title><?= t('dashboard.title') ?></title>
     <link rel="icon" type="image/png" href="files/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="style.css?v=1.3">
+    <link rel="stylesheet" type="text/css" href="style.css?v=1.3.1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -172,7 +172,7 @@ try {
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js"></script>
-    <script src="js/tour.js?v=1.4.1"></script>
+    <script src="js/tour.js?v=1.5.0"></script>
     <script>
         <?php if ($firstLogin == 1): ?>
         const currentPage = '<?= $page ?>';

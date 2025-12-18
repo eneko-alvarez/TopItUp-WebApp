@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
             $cubatas_counters = [
                 ['name' => 'Roncola', 'color' => '#ff6b6b'],
                 ['name' => 'Gintonic', 'color' => '#4ecdc4'],
-                ['name' => 'odka-limon', 'color' => '#ffe66d']
+                ['name' => 'Vodka-limon', 'color' => '#ffe66d']
             ];
             
             foreach ($cubatas_counters as $counter_data) {
