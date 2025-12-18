@@ -184,26 +184,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopItUp - Track What Matters</title>
-    <meta name="description" content="TopItUp is the ultimate habit tracking app. Keep count of your drinks, workouts, cigarettes, or anything else. Simple, fast, and privacy-focused.">
+    <title>TopItUp 🎉 Count Everything!</title>
+    <meta name="description" content="Who said counting can't be fun? Track your beers, coffees, workouts, or literally anything. Compete with friends and see who's really winning at life 🏆">
     <meta name="keywords" content="counter app, habit tracker, activity tracker, leaderboard, count drinks, track habits, pwa, productivity">
     <meta name="robots" content="index, follow">
     <meta name="author" content="TopItUp Team">
     <link rel="canonical" href="https://topitup.party/">
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://topitup.party/">
     <meta property="og:title" content="TopItUp - Track What Matters">
-    <meta property="og:description" content="The simplest way to track your habits and compete with friends. Install the app to get started.">
-    <meta property="og:image" content="https://topitup.party/files/landing-bg.png">
+    <meta property="og:description" content="Beers? Gym sessions? Days without uni? Track anything, compete with friends, and actually have fun doing it. It's a party! 🎊">
+    <meta property="og:image" content="https://topitup.party/files/logo.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://topitup.party/">
     <meta property="twitter:title" content="TopItUp - Track What Matters">
-    <meta property="twitter:description" content="The simplest way to track your habits and compete with friends. Install the app to get started.">
-    <meta property="twitter:image" content="https://topitup.party/files/landing-bg.png">
+    <meta property="twitter:description" content="Beers? Gym sessions? Days without uni? Track anything, compete with friends, and actually have fun doing it. It's a party! 🎊">
+    <meta property="twitter:image" content="https://topitup.party/files/logo.png">
     <!-- Manifest para Android/Chromium y soporte general PWA -->
     <link rel="manifest" href="/manifest.webmanifest">
 
