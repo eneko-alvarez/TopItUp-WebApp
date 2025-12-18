@@ -76,10 +76,8 @@ const tourText = {
     }
 };
 
-function initTour(currentPage, tourStep) {
-    // Get current language from cookie
-    const cookieLang = document.cookie.split('; ').find(row => row.startsWith('user_lang='));
-    const lang = cookieLang ? cookieLang.split('=')[1] : 'en';
+function initTour(currentPage, tourStep, lang = 'en') {
+    // Use the language passed from PHP, fallback to 'en' if not provided
     const text = tourText[lang] || tourText.en;
 
     const tour = new Shepherd.Tour({

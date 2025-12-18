@@ -74,7 +74,7 @@ function setLang($lang) {
         'domain' => '',
         'secure' => true,      // HTTPS only
         'httponly' => true,    // Not accessible from JavaScript
-        'samesite' => 'Strict' // CSRF protection
+        'samesite' => 'Lax'    // CSRF protection + allows external links
     ]);
     
     $_COOKIE['user_lang'] = $lang; // Set for current request

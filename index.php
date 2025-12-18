@@ -1,8 +1,14 @@
 <?php
 session_start();
 
-// Si el usuario ya está logueado, redirigir al dashboard
-if (isset($_SESSION['userid'])) {
+// Detectar si está en modo standalone (app instalada)
+// Acepta tanto de GET (navegación directa) como de POST (envío de formularios)
+$isStandalone = (isset($_GET['standalone']) && $_GET['standalone'] === 'true') ||
+                (isset($_POST['standalone']) && $_POST['standalone'] === 'true');
+
+// Si el usuario ya está logueado Y está en modo standalone, redirigir al dashboard
+// Si está en navegador, permitir ver la landing page aunque tenga sesión
+if (isset($_SESSION['userid']) && $isStandalone) {
     header('Location: dashboard.php');
     exit;
 }
@@ -117,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
                 'domain' => '',
                 'secure' => true,      // Solo HTTPS
                 'httponly' => true,    // No accesible desde JavaScript
-                'samesite' => 'Strict' // Protección CSRF
+                'samesite' => 'Lax'    // Protección CSRF + permite links externos
             ]);
             
             header("Location: dashboard.php");
@@ -166,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 'domain' => '',
                 'secure' => true,      // Solo HTTPS
                 'httponly' => true,    // No accesible desde JavaScript
-                'samesite' => 'Strict' // Protección CSRF
+                'samesite' => 'Lax'    // Protección CSRF + permite links externos
             ]);
             header("Location: dashboard.php");
             exit;
@@ -655,8 +661,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         
         <!-- Login Form -->
         <div id="login-form" class="form-content <?php echo $active_form === 'login' ? 'active' : ''; ?>">
-            <form method="POST">
+            <form method="POST" id="login-form-element">
                 <input type="hidden" name="action" value="login">
+                <input type="hidden" name="standalone" id="login-standalone" value="false">
                 
                 <div class="form-group">
                     <label for="login-username"><?= t('auth.login.username') ?></label>
@@ -682,8 +689,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         
         <!-- Register Form -->
         <div id="register-form" class="form-content <?php echo $active_form === 'register' ? 'active' : ''; ?>">
-            <form method="POST">
+            <form method="POST" id="register-form-element">
                 <input type="hidden" name="action" value="register">
+                <input type="hidden" name="standalone" id="register-standalone" value="false">
                 
                 <div class="form-group">
                     <label for="register-username"><?= t('auth.register.username') ?></label>
@@ -994,8 +1002,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            if (isStandalone()) {
+            const standalone = isStandalone();
+            
+            if (standalone) {
                 document.getElementById('app-container').style.display = 'block';
+                // Set hidden inputs to 'true' so PHP knows we're in standalone
+                document.getElementById('login-standalone').value = 'true';
+                document.getElementById('register-standalone').value = 'true';
             } else {
                 document.getElementById('install-landing').style.display = 'flex';
             }

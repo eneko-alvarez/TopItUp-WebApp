@@ -45,7 +45,7 @@ return [
     // Landing Page (Installation)
     'landing' => [
         'subtitle' => 'Cuenta lo que importa.<br>Desde tu bolsillo.',
-        'install_text' => 'Instalación más fácil que desde<br>la App Store o Google Play Store',
+        'install_text' => 'Instalación más sencilla que desde<br>la App Store o Google Play Store',
         'ios_button' => 'Para iOS',
         'android_button' => 'Para Android',
         'ios_instructions' => [
@@ -66,9 +66,9 @@ return [
 
     // Navigation
     'nav' => [
-        'dashboard' => 'Dashboard',
-        'leaderboard' => 'Leaderboard',
-        'settings' => 'Settings',
+        'dashboard' => 'Panel',
+        'leaderboard' => 'Clasificación',
+        'settings' => 'Ajustes',
         'logout' => 'Salir',
     ],
 
@@ -236,8 +236,8 @@ return [
     'meta' => [
         'title' => 'TopItUp 🎉 ¡Cuenta de Todo!',
         'description' => '¿Quién dijo que contar no puede ser divertido? Cuenta tus cervezas, cafés, entrenamientos, o literalmente cualquier cosa. Compite con amigos y mira quién está ganando en la vida 🏆',
-        'keywords' => 'app contador, rastreador de hábitos, rastreador de actividades, leaderboard, contar bebidas, rastrear hábitos, pwa, productividad',
-        'og_title' => 'TopItUp - Cuenta lo que Importa',
+        'keywords' => 'app contador, rastreador de hábitos, rastreador de actividades, leaderboard, contar bebidas, rastrear hábitos, pwa, productividad, contadores, grupos, wrap, 2026 wrap, alcohol',
+        'og_title' => 'TopItUp - Cuenta lo realmente importante',
         'og_description' => '¿Cervezas? ¿Sesiones de gym? ¿Días sin uni? Cuenta lo que quieras, compite con colegas y diviértete haciéndolo. ¡Es una fiesta! 🎊',
     ],
 

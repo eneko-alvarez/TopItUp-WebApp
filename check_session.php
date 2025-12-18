@@ -19,6 +19,16 @@ if (!isset($_SESSION["userid"])) {
         if ($session) {
             $_SESSION["userid"] = $session["userid"];
             $_SESSION["username"] = $session["username"];
+            
+            // Renovar token si está próximo a expirar (menos de 30 días restantes)
+            $expiresAt = strtotime($session['expires_at']);
+            $thirtyDaysFromNow = time() + (30 * 24 * 60 * 60);
+            
+            if ($expiresAt < $thirtyDaysFromNow) {
+                $newExpiry = date('Y-m-d H:i:s', strtotime('+1 year'));
+                $renewStmt = $pdo->prepare("UPDATE user_sessions SET expires_at = ? WHERE token = ?");
+                $renewStmt->execute([$newExpiry, $token]);
+            }
         } else {
             setcookie("rememberuser", "", time() - 3600, "/");
             header("Location: index.php");
