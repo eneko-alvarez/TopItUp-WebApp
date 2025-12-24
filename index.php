@@ -6,6 +6,27 @@ session_start();
 $isStandalone = (isset($_GET['standalone']) && $_GET['standalone'] === 'true') ||
                 (isset($_POST['standalone']) && $_POST['standalone'] === 'true');
 
+require_once 'config.php';
+
+// Validar cookie/token antes de revisar sesión
+// Si hay un token válido, establecer sesión para esta petición
+if (isset($_COOKIE["rememberuser"]) && !isset($_SESSION['userid'])) {
+    $token = $_COOKIE["rememberuser"];
+    $stmt = $pdo->prepare("
+        SELECT user_sessions.*, users.id as userid, users.username 
+        FROM user_sessions 
+        JOIN users ON user_sessions.user_id = users.id 
+        WHERE token = ? AND expires_at > NOW()
+    ");
+    $stmt->execute([$token]);
+    $session = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($session) {
+        $_SESSION["userid"] = $session["userid"];
+        $_SESSION["username"] = $session["username"];
+    }
+}
+
 // Si el usuario ya está logueado Y está en modo standalone, redirigir al dashboard
 // Si está en navegador, permitir ver la landing page aunque tenga sesión
 if (isset($_SESSION['userid']) && $isStandalone) {
@@ -13,7 +34,6 @@ if (isset($_SESSION['userid']) && $isStandalone) {
     exit;
 }
 
-require_once 'config.php';
 
 $message = '';
 $active_form = $_GET['form'] ?? 'login';
