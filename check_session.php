@@ -34,7 +34,14 @@ if (isset($_COOKIE["rememberuser"])) {
         }
     } else {
         // Invalid or expired token - clear cookie and redirect
-        setcookie("rememberuser", "", time() - 3600, "/");
+        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
+        setcookie("rememberuser", "", [
+            'expires' => time() - 3600,
+            'path' => '/',
+            'secure' => $isHttps,
+            'httponly' => true,
+            'samesite' => $isHttps ? 'None' : 'Lax'
+        ]);
         header("Location: index.php");
         exit;
     }

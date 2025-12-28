@@ -136,14 +136,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
                 $_SERVER["HTTP_USER_AGENT"] ?? '',
                 $_SERVER["REMOTE_ADDR"] ?? '',
             ]);
-            // Establecer cookie con flags de seguridad
+            // Establecer cookie con flags de seguridad optimizados para PWA
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
             setcookie("rememberuser", $rememberToken, [
                 'expires' => time() + 365*24*60*60,  // 1 año
                 'path' => '/',
-                'domain' => '',
-                'secure' => true,      // Solo HTTPS
-                'httponly' => true,    // No accesible desde JavaScript
-                'samesite' => 'Lax'    // Protección CSRF + permite links externos
+                'secure' => $isHttps,     // Solo si estamos en HTTPS
+                'httponly' => true,       // No accesible desde JavaScript
+                'samesite' => $isHttps ? 'None' : 'Lax'  // None para HTTPS (mejor compatibilidad PWA), Lax para HTTP
             ]);
             
             header("Location: dashboard.php");
@@ -185,14 +185,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 $_SERVER["HTTP_USER_AGENT"] ?? '',
                 $_SERVER["REMOTE_ADDR"] ?? '',
             ]);
-            // Establecer cookie con flags de seguridad
+            // Establecer cookie con flags de seguridad optimizados para PWA
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
             setcookie("rememberuser", $rememberToken, [
                 'expires' => time() + 365*24*60*60,  // 1 año
                 'path' => '/',
-                'domain' => '',
-                'secure' => true,      // Solo HTTPS
-                'httponly' => true,    // No accesible desde JavaScript
-                'samesite' => 'Lax'    // Protección CSRF + permite links externos
+                'secure' => $isHttps,     // Solo si estamos en HTTPS
+                'httponly' => true,       // No accesible desde JavaScript
+                'samesite' => $isHttps ? 'None' : 'Lax'  // None para HTTPS (mejor compatibilidad PWA), Lax para HTTP
             ]);
             header("Location: dashboard.php");
             exit;
