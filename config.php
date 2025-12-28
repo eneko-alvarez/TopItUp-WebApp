@@ -1,6 +1,6 @@
 <?php
 // Development Mode (set to false in production)
-define('DEVELOPMENT_MODE', true); // Change to false when deploying to production
+define('DEVELOPMENT_MODE', false); // Change to false when deploying to production
 
 // Database configuration
 $host = 'bu1h1d02lfvrdpfmi5rw-mysql.services.clever-cloud.com';
