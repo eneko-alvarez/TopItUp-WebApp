@@ -68,14 +68,8 @@ function setLang($lang) {
         $lang = DEFAULT_LANGUAGE;
     }
     
-    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
-    setcookie('user_lang', $lang, [
-        'expires' => time() + (365 * 24 * 60 * 60), // 1 year
-        'path' => '/',
-        'secure' => $isHttps,      // Only if HTTPS
-        'httponly' => true,        // Not accessible from JavaScript
-        'samesite' => $isHttps ? 'None' : 'Lax'  // None for HTTPS (better PWA compatibility), Lax for HTTP
-    ]);
+    // Sintaxis tradicional: setcookie(name, value, expire, path, domain, secure, httponly)
+    setcookie('user_lang', $lang, time() + (365 * 24 * 60 * 60), "/", "", true, true);
     
     $_COOKIE['user_lang'] = $lang; // Set for current request
 }

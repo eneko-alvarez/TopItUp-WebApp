@@ -136,15 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
                 $_SERVER["HTTP_USER_AGENT"] ?? '',
                 $_SERVER["REMOTE_ADDR"] ?? '',
             ]);
-            // Establecer cookie con flags de seguridad optimizados para PWA
-            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
-            setcookie("rememberuser", $rememberToken, [
-                'expires' => time() + 365*24*60*60,  // 1 año
-                'path' => '/',
-                'secure' => $isHttps,     // Solo si estamos en HTTPS
-                'httponly' => true,       // No accesible desde JavaScript
-                'samesite' => $isHttps ? 'None' : 'Lax'  // None para HTTPS (mejor compatibilidad PWA), Lax para HTTP
-            ]);
+            
+            // Establecer cookie con sintaxis tradicional (nombre, valor, expiracion, path, domain, secure, httponly)
+            setcookie("rememberuser", $rememberToken, time() + 365*24*60*60, "/", "", true, true);
             
             header("Location: dashboard.php");
             exit;
@@ -176,6 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             // Generar token único
             $rememberToken = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 year'));
+            
             // Insertar en user_sessions
             $stmt = $pdo->prepare("INSERT INTO user_sessions (user_id, token, expires_at, user_agent, ip) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([
@@ -185,15 +180,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                 $_SERVER["HTTP_USER_AGENT"] ?? '',
                 $_SERVER["REMOTE_ADDR"] ?? '',
             ]);
-            // Establecer cookie con flags de seguridad optimizados para PWA
-            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
-            setcookie("rememberuser", $rememberToken, [
-                'expires' => time() + 365*24*60*60,  // 1 año
-                'path' => '/',
-                'secure' => $isHttps,     // Solo si estamos en HTTPS
-                'httponly' => true,       // No accesible desde JavaScript
-                'samesite' => $isHttps ? 'None' : 'Lax'  // None para HTTPS (mejor compatibilidad PWA), Lax para HTTP
-            ]);
+            
+            // Establecer cookie con sintaxis tradicional (nombre, valor, expiracion, path, domain, secure, httponly)
+            setcookie("rememberuser", $rememberToken, time() + 365*24*60*60, "/", "", true, true);
             header("Location: dashboard.php");
             exit;
         } else {
