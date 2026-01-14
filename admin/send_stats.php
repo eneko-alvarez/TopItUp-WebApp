@@ -1,9 +1,9 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-$apiKey = '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';
 
-require_once "config.php"; // Configura $host, $dbname, $username, $password
+require_once "config.php"; // Configura $host, $dbname, $username, $password, $brevoApiKey
+$apiKey = $brevoApiKey; // Use API key from config
 
 
 try {
@@ -43,7 +43,7 @@ function enviarEmailBrevo($email, $htmlContent, $subject) {
 
 
     $data = [
-        "sender" => ["name" => "TopItUp Stats", "email" => "stats@enekoalvarez.com"],
+        "sender" => ["name" => "TopItUp Stats", "email" => "stats@topitup.party"],
         "to" => [["email" => $email]],
         "subject" => $subject,
         "htmlContent" => $htmlContent
