@@ -1,13 +1,16 @@
 <?php
 require_once 'includes/functions.php';
 
+// Get user's filter year from cookie (default current year)
+$filter_year = getUserFilterYear();
+
 $groups = getUserGroups($pdo, $user_id);
-$unassignedCounters = getUnassignedCounters($pdo, $user_id);
+$unassignedCounters = getUnassignedCounters($pdo, $user_id, $filter_year);
 
 $groupsData = [];
 foreach ($groups as $group) {
-    $counters = getGroupCounters($pdo, $group['id']);
-    $total = getGroupTotal($pdo, $group['id']);
+    $counters = getGroupCounters($pdo, $group['id'], $filter_year);
+    $total = getGroupTotal($pdo, $group['id'], $filter_year);
 
     $countersData = [];
     foreach ($counters as $counter) {
@@ -42,11 +45,11 @@ $stmt = $pdo->prepare("
     SELECT cl.date, cl.hour, c.name AS counter_name, c.color 
     FROM counter_logs cl 
     JOIN counters c ON cl.counter_id = c.id 
-    WHERE c.user_id = ? 
+    WHERE c.user_id = ? AND YEAR(cl.date) = ?
     ORDER BY cl.date DESC, cl.hour DESC 
     LIMIT 10
 ");
-$stmt->execute([$user_id]);
+$stmt->execute([$user_id, $filter_year]);
 $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

@@ -68,8 +68,8 @@ function setLang($lang) {
         $lang = DEFAULT_LANGUAGE;
     }
     
-    // Sintaxis tradicional: setcookie(name, value, expire, path, domain, secure, httponly)
-    setcookie('user_lang', $lang, time() + (365 * 24 * 60 * 60), "/", "", true, true);
+    // TEST: Cookie sin secure flag para PWA
+    setcookie('user_lang', $lang, time() + (365 * 24 * 60 * 60), "/");
     
     $_COOKIE['user_lang'] = $lang; // Set for current request
 }

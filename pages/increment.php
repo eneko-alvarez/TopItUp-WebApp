@@ -1,6 +1,9 @@
 <?php
 require_once 'includes/functions.php';
 
+// Get user's filter year from cookie (default current year)
+$filter_year = getUserFilterYear();
+
 $currentDate = date('Y-m-d');
 $currentTime = date('H:i:s');
 
@@ -51,7 +54,7 @@ if ($group_id) {
         $pageColor = $group['color'];
         $return_url = "?page=increment&group_id={$group_id}";
         
-        $countersToShow = getGroupCounters($pdo, $group_id);
+        $countersToShow = getGroupCounters($pdo, $group_id, $filter_year);
         foreach ($countersToShow as &$counter) {
             $lastLog = getCounterLastLog($pdo, $counter['id']);
             $counter['last_date'] = $lastLog['date'] ?? null;
@@ -60,8 +63,14 @@ if ($group_id) {
         unset($counter);
     }
 } elseif ($counter_id) {
-    $stmt = $pdo->prepare("SELECT * FROM counters WHERE id = ? AND user_id = ?");
-    $stmt->execute([$counter_id, $user_id]);
+    // Get counter with filtered count
+    $stmt = $pdo->prepare("
+        SELECT c.id, c.name, c.color, c.user_id, c.is_public, c.created_at,
+               (SELECT COUNT(*) FROM counter_logs WHERE counter_id = c.id AND YEAR(date) = ?) as count
+        FROM counters c
+        WHERE c.id = ? AND c.user_id = ?
+    ");
+    $stmt->execute([$filter_year, $counter_id, $user_id]);
     $counter = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($counter) {
@@ -123,16 +132,16 @@ if (empty($countersToShow)) {
                 <span style="font-size: 12px; color: #808080; font-weight: normal;">(<?= t('common.delete') ?> <i class="fas fa-trash" style="font-size: 10px;"></i>)</span>
             </h4>
             <?php
-            // Get last 10 logs for this counter/group
+            // Get last 10 logs for this counter/group filtered by year
             if ($counter_id) {
                 $stmt = $pdo->prepare("
                     SELECT id, date, hour, latitude, longitude
                     FROM counter_logs
-                    WHERE counter_id = ?
+                    WHERE counter_id = ? AND YEAR(date) = ?
                     ORDER BY date DESC, hour DESC
                     LIMIT 10
                 ");
-                $stmt->execute([$counter_id]);
+                $stmt->execute([$counter_id, $filter_year]);
             } else {
                 $counterIds = array_map(fn($c) => $c['id'], $countersToShow);
                 $placeholders = implode(',', array_fill(0, count($counterIds), '?'));
@@ -140,11 +149,11 @@ if (empty($countersToShow)) {
                     SELECT cl.id, cl.date, cl.hour, cl.latitude, cl.longitude, c.name as counter_name, c.color
                     FROM counter_logs cl
                     JOIN counters c ON cl.counter_id = c.id
-                    WHERE cl.counter_id IN ($placeholders)
+                    WHERE cl.counter_id IN ($placeholders) AND YEAR(cl.date) = ?
                     ORDER BY cl.date DESC, cl.hour DESC
                     LIMIT 10
                 ");
-                $stmt->execute($counterIds);
+                $stmt->execute([...$counterIds, $filter_year]);
             }
             $recentLogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             

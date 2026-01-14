@@ -1,45 +1,27 @@
 <?php
-// Configurar parámetros de sesión ANTES de session_start()
-session_set_cookie_params([
-    'lifetime' => 365 * 24 * 60 * 60, // 1 año
-    'path' => '/',
-    'domain' => '',
-    'secure' => true, // Porque estás en HTTPS
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
 session_start();
-
-// Detectar si está en modo standalone (app instalada)
-// Acepta tanto de GET (navegación directa) como de POST (envío de formularios)
-$isStandalone = (isset($_GET['standalone']) && $_GET['standalone'] === 'true') ||
-                (isset($_POST['standalone']) && $_POST['standalone'] === 'true');
 
 require_once 'config.php';
 
-// Verificar si ya hay sesión válida
-if (isset($_SESSION['userid']) && isset($_COOKIE['rememberuser'])) {
-    $token = $_COOKIE['rememberuser'];
-    $stmt = $pdo->prepare("SELECT * FROM user_sessions WHERE token = ? AND expires_at > NOW()");
-    $stmt->execute([$token]);
-    
-    if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-        // Sesión válida, redirigir al dashboard
-        header('Location: dashboard.php');
-        exit;
-    } else {
-        // Cookie inválida, limpiar sesión
-        session_destroy();
-        session_start();
+// Si el usuario ya tiene una sesión activa, verificar si es válida
+if (isset($_SESSION['userid'])) {
+    // Verificar que la sesión sea válida mediante cookie
+    if (isset($_COOKIE['rememberuser'])) {
+        $token = $_COOKIE['rememberuser'];
+        $stmt = $pdo->prepare("SELECT * FROM user_sessions WHERE token = ? AND expires_at > NOW()");
+        $stmt->execute([$token]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            // Sesión válida, redirigir al dashboard
+            header('Location: dashboard.php');
+            exit;
+        }
     }
-} elseif (isset($_SESSION['userid']) || isset($_COOKIE['rememberuser'])) {
-    // Si hay sesión o cookie pero no ambas, o alguna es inválida, limpiar
+    // Si no hay cookie o es inválida, limpiar sesión
     session_destroy();
     session_start();
 }
-// Si no hay ni sesión ni cookie, continuar normalmente (no destruir nada)
-
-
 
 $message = '';
 $active_form = $_GET['form'] ?? 'login';
@@ -69,14 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
         $_SESSION['error_message'] = $message;
         $_SESSION['form_username'] = $username;
         $_SESSION['form_email'] = $email;
-        header('Location: index.php?form=register');
+        header('Location: login.php?form=register');
         exit;
     } elseif (strlen($password) < 8) {
         $message = t('auth.errors.password_min_length');
         $_SESSION['error_message'] = $message;
         $_SESSION['form_username'] = $username;
         $_SESSION['form_email'] = $email;
-        header('Location: index.php?form=register');
+        header('Location: login.php?form=register');
         exit;
     } elseif ($username && $email && $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -161,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
             $_SESSION['error_message'] = $message;
             $_SESSION['form_username'] = $username;
             $_SESSION['form_email'] = $email;
-            header('Location: index.php?form=register');
+            header('Location: login.php?form=register');
             exit;
         }
     }
@@ -211,8 +193,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     }
 }
 ?>
-<!-- El resto del HTML permanece igual -->
-
 
 <!DOCTYPE html>
 <html lang="<?= currentLang() ?>">
@@ -221,44 +201,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('meta.title') ?></title>
     <meta name="description" content="<?= t('meta.description') ?>">
-    <meta name="keywords" content="<?= t('meta.keywords') ?>">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="TopItUp Team">
-    <link rel="canonical" href="https://topitup.party/">
-
-    <!-- Open Graph / Facebook / WhatsApp -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://topitup.party/">
-    <meta property="og:title" content="<?= t('meta.og_title') ?>">
-    <meta property="og:description" content="<?= t('meta.og_description') ?>">
-    <meta property="og:image" content="https://topitup.party/files/logo.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://topitup.party/">
-    <meta property="twitter:title" content="<?= t('meta.og_title') ?>">
-    <meta property="twitter:description" content="<?= t('meta.og_description') ?>">
-    <meta property="twitter:image" content="https://topitup.party/files/logo.png">
-    <!-- Manifest para Android/Chromium y soporte general PWA -->
-    <link rel="manifest" href="/manifest.webmanifest">
-
-    <!-- iOS: abrir en ventana propia (standalone) y estilo de barra de estado -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="TopItUp">
-
-    <!-- Iconos iOS (elige rutas reales de tus PNG) -->
-    <link rel="apple-touch-icon" href="files/logo.png">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="files/logo.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="files/logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="files/logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="files/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="files/logo.png">
-
-    <!-- Colores de tema (Android splash/barra) -->
-    <meta name="theme-color" content="#000000">
     <style>
         * {
             margin: 0;
@@ -563,7 +507,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     </style>
 </head>
 <body>
-    <!-- Language Switcher (visible on both landing and app) -->
+    <!-- Language Switcher -->
     <div class="lang-switcher" id="langSwitcher">
         <button class="lang-btn <?= currentLang() === 'en' ? 'active' : '' ?>" onclick="switchLanguage('en')">
             🇬🇧 EN
@@ -573,105 +517,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         </button>
     </div>
     
-    <!-- 1. LANDING PAGE (Shown if NOT standalone) -->
-    <div id="install-landing" style="display: none;">
-        <div class="landing-header">
-            <div class="landing-logo">
-                <img src="files/full_logo.png?v=1.1" alt="TopItUp">
-            </div>
-            <h2 class="landing-subtitle">
-                <?= t('landing.subtitle') ?>
-            </h2>
-        </div>
-
-        <!-- 3:4 Aspect Ratio Carousel (Circular/Infinite Loop Effect) -->
-        <div class="screenshot-carousel-container">
-            <div class="screenshot-carousel">
-                <!-- Original Items -->
-                <div class="screenshot-item"><img src="files/c4.png" alt="View 4"></div>
-                <div class="screenshot-item"><img src="files/c1.png" alt="View 1"></div>
-                <div class="screenshot-item"><img src="files/c2.png" alt="View 2"></div>
-                <div class="screenshot-item"><img src="files/c3.png" alt="View 3"></div>
-                <div class="screenshot-item"><img src="files/c5.png" alt="View 5"></div>
-                <div class="screenshot-item"><img src="files/c6.png" alt="View 6"></div>
-                <!-- Duplicated for Loop Effect -->
-                <div class="screenshot-item"><img src="files/c4.png" alt="View 4"></div>
-                <div class="screenshot-item"><img src="files/c1.png" alt="View 1"></div>
-                <div class="screenshot-item"><img src="files/c2.png" alt="View 2"></div>
-                <div class="screenshot-item"><img src="files/c3.png" alt="View 3"></div>
-                <div class="screenshot-item"><img src="files/c5.png" alt="View 5"></div>
-                <div class="screenshot-item"><img src="files/c6.png" alt="View 6"></div>
-            </div>
-        </div>
-        
-        <div class="landing-footer">
-            <br>
-            <p class="install-text"><?= t('landing.install_text') ?></p>
-            
-            <div class="landing-buttons">
-                <!-- Added logo slots as requested -->
-                <button onclick="showInstructions('ios')" class="install-btn ios-btn">
-                    <img src="files/ios_logo.png" class="btn-icon-img" alt="Safari" onerror="this.style.display='none'"> 
-                    <span class="btn-text"><?= t('landing.ios_button') ?></span>
-                </button>
-                <button onclick="showInstructions('android')" class="install-btn android-btn">
-                    <img src="files/android_logo.png" class="btn-icon-img" alt="Chrome" onerror="this.style.display='none'">
-                    <span class="btn-text"><?= t('landing.android_button') ?></span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Instructions Modals -->
-        <div id="ios-instructions" class="instruction-modal" style="display: none;">
-            <div class="instruction-content">
-                <span class="close-modal" onclick="hideInstructions()">&times;</span>
-                <h3><i class="fab fa-apple"></i> <?= t('landing.ios_instructions.title') ?></h3>
-                <ol>
-                    <li>
-                        <?= t('landing.ios_instructions.step1') ?>
-                        <img src="files/ios_step_1.png" class="step-image" alt="Share Icon" onerror="this.style.display='none'">
-                    </li>
-                    <li>
-                        <?= t('landing.ios_instructions.step2') ?>
-                        <img src="files/ios_step_2.png" class="step-image" alt="Add to Home Screen" onerror="this.style.display='none'">
-                    </li>
-                    <li>
-                        <?= t('landing.ios_instructions.step3') ?>
-                        <img src="files/ios_step_3.png" class="step-image" alt="Add Button" onerror="this.style.display='none'">
-                    </li>
-                </ol>
-                <br>
-                <p><?= t('landing.ios_instructions.success') ?></p>
-            </div>
-        </div>
-
-        <div id="android-instructions" class="instruction-modal" style="display: none;">
-            <div class="instruction-content">
-                <span class="close-modal" onclick="hideInstructions()">&times;</span>
-                <h3><i class="fab fa-android"></i> <?= t('landing.android_instructions.title') ?></h3>
-                <ol>
-                    <li>
-                        <?= t('landing.android_instructions.step1') ?>
-                        <img src="files/android_step_1.png" class="step-image" alt="Menu Icon" onerror="this.style.display='none'">
-                    </li>
-                    <li>
-                        <?= t('landing.android_instructions.step2') ?>
-                        <img src="files/android_step_2.png" class="step-image" alt="Install Option" onerror="this.style.display='none'">
-                    </li>
-                    <li>
-                        <?= t('landing.android_instructions.step3') ?>
-                        <img src="files/android_step_3.png" class="step-image" alt="Install Prompt" onerror="this.style.display='none'">
-                    </li>
-                </ol>
-                <br>
-                <p><?= t('landing.android_instructions.success') ?></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. REAL APP (Shown ONLY if standalone) -->
-    <div id="app-container" class="container" style="display: none;">
-        <!-- ... (Existing App Content) ... -->
+    <div class="container">
         <div class="logo-container">
             <img src="files/full_logo.png?v=1.1" alt="TopItUp Logo">
             <div class="welcome-text"><?= t('auth.welcome_text') ?></div>
@@ -690,9 +536,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         
         <!-- Login Form -->
         <div id="login-form" class="form-content <?php echo $active_form === 'login' ? 'active' : ''; ?>">
-            <form method="POST" id="login-form-element">
+            <form method="POST">
                 <input type="hidden" name="action" value="login">
-                <input type="hidden" name="standalone" id="login-standalone" value="false">
                 
                 <div class="form-group">
                     <label for="login-username"><?= t('auth.login.username') ?></label>
@@ -718,9 +563,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         
         <!-- Register Form -->
         <div id="register-form" class="form-content <?php echo $active_form === 'register' ? 'active' : ''; ?>">
-            <form method="POST" id="register-form-element">
+            <form method="POST">
                 <input type="hidden" name="action" value="register">
-                <input type="hidden" name="standalone" id="register-standalone" value="false">
                 
                 <div class="form-group">
                     <label for="register-username"><?= t('auth.register.username') ?></label>
@@ -764,295 +608,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         </div>
     </div>
     
-    <style>
-        #install-landing {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000; /* Fallback */
-            /* Grayish background as before */
-            background: linear-gradient(180deg, #1a1a1a 0%, #060606 100%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-            color: white;
-            justify-content: space-between; /* Space out header, carousel, footer */
-        }
-        
-        .landing-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .landing-logo img {
-            width: 140px; /* Mas pequeñito */
-            height: auto;
-            margin-bottom: 12px;
-        }
-        
-        .landing-subtitle {
-            font-size: 1.1rem;
-            font-weight: 700; /* Negrita */
-            line-height: 1.4;
-            color: #ccc;
-            margin: 0;
-        }
-        
-        /* CAROUSEL STYLES - INFINITE SCROLL */
-        .screenshot-carousel-container {
-            width: 100%;
-            overflow: hidden;
-            padding: 20px 0;
-            position: relative;
-            /* Mobile: Gentle fade at very edges only */
-            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-        }
-        
-        /* Desktop: Sharp cutoff on sides */
-        @media (min-width: 768px) {
-            .screenshot-carousel-container {
-                mask-image: linear-gradient(to right, transparent 20%, black 30%, black 70%, transparent 80%);
-                -webkit-mask-image: linear-gradient(to right, transparent 20%, black 30%, black 70%, transparent 80%);
-            }
-        }
-
-        .screenshot-carousel {
-            display: flex;
-            gap: 16px;
-            width: max-content;
-            /* Infinite Scroll Animation */
-            animation: scroll 20s linear infinite;
-        }
-        
-        /* Pause on hover if desired, usually good for UX */
-        .screenshot-carousel:hover {
-            animation-play-state: paused;
-        }
-
-        @keyframes scroll {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                /* Moves half the width (the length of one full set of items) */
-                transform: translateX(calc(-50% - 8px)); /* 50% + half gap */
-            }
-        }
-        
-        .screenshot-item {
-            width: 180px; /* Small, consistent size on all devices */
-            aspect-ratio: 10/16;
-            height: auto;
-            flex-shrink: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #333;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            background: #222;
-        }
-        
-        .screenshot-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* MISSING FOOTER & BUTTON STYLES RESTORED */
-        .landing-footer {
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .install-text {
-            font-size: 0.95rem;
-            color: #888;
-            margin-bottom: 24px;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-        
-        .landing-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-        
-        .install-btn {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            background: #111;
-            color: #fff;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.2s ease;
-        }
-        
-        .install-btn:hover {
-            background: #222;
-            border-color: #555;
-            transform: translateY(-2px);
-        }
-        
-        .install-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* INSTRUCTION STEP IMAGES */
-        .step-image {
-            display: block;
-            margin-top: 6px;
-            margin-bottom: 12px;
-            margin-left: 10px; /* Indented */
-            max-width: 250px; /* Slightly narrower too */
-            max-height: 50px; /* Approx height of 1.5 lines */
-            width: auto;
-            height: auto;
-            border-radius: 6px;
-            border: 1px solid #333;
-            object-fit: contain; /* Keep aspect ratio intact */
-            background: #222;
-        }
-
-        /* BUTTON ICONS */
-        .btn-icon-img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            display: block;
-        }
-        
-        .btn-text {
-            white-space: nowrap;
-        }
-
-        /* MODAL FIXES */
-        .instruction-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.9);
-            z-index: 99999; /* Max Z-Index */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(8px);
-        }
-        
-        .instruction-content {
-            background: #111;
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid #333;
-            max-width: 400px;
-            width: 100%;
-            position: relative;
-            text-align: left;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #888;
-            transition: color 0.2s;
-        }
-        
-        .close-modal:hover {
-            color: #fff;
-        }
-
-        .instruction-content h3 {
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .instruction-content ol {
-            padding-left: 20px;
-            color: #ccc;
-            line-height: 1.6;
-        }
-        
-        .instruction-content li {
-            margin-bottom: 12px;
-        }
-
-        /* Responsive adjustments */
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            /* No width override for carousel items - keep them small (180px) */
-            .landing-footer {
-                margin-top: auto;
-            }
-        }
-    </style>
-
     <script>
-        // STANDALONE DETECTION LOGIC
-        function isStandalone() {
-            // Check if standard standalone
-            if (window.matchMedia('(display-mode: standalone)').matches) return true;
-            
-            // Check iOS standalone
-            if (window.navigator.standalone === true) return true;
-            
-            // Check Android PWA referrer
-            if (document.referrer.includes('android-app://')) return true;
-            
-            // DEVELOPMENT MODE: Allow ?standalone=true only in dev environment
-            <?php if (defined('DEVELOPMENT_MODE') && DEVELOPMENT_MODE): ?>
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('standalone') === 'true') return true;
-            <?php endif; ?>
-            
-            return false;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const standalone = isStandalone();
-            
-            if (standalone) {
-                document.getElementById('app-container').style.display = 'block';
-                // Set hidden inputs to 'true' so PHP knows we're in standalone
-                document.getElementById('login-standalone').value = 'true';
-                document.getElementById('register-standalone').value = 'true';
-            } else {
-                document.getElementById('install-landing').style.display = 'flex';
-            }
-        });
-
-        // Instructions Modal Logic
-        function showInstructions(platform) {
-            document.getElementById(platform + '-instructions').style.display = 'flex';
-        }
-
-        function hideInstructions() {
-            document.querySelectorAll('.instruction-modal').forEach(el => el.style.display = 'none');
-        }
-
-        // --- EXISTING FORM LOGIC ---
         function showForm(formType) {
             // Hide all forms
             document.querySelectorAll('.form-content').forEach(form => {
@@ -1174,13 +730,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             const url = new URL(window.location);
             url.searchParams.set('lang', lang);
             window.location.href = url.toString();
-        }
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js');
-        });
         }
     </script>
 </body>

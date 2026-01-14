@@ -118,6 +118,14 @@ return [
             'view' => 'View',
             'unassigned' => 'Unassigned',
         ],
+        'year_filter' => [
+            'title' => 'Data Year Filter',
+            'label' => 'Select Year',
+            'description' => 'Filter counter data by year. Only complete years with records are available.',
+            'cookie_info' => 'Your selection will expire after 10 minutes of inactivity and reset to the current year.',
+            'current' => 'Current',
+            'apply' => 'Apply Filter',
+        ],
         'errors' => [
             'counter_exists' => 'A counter with that name already exists.',
             'group_exists' => 'A group with that name already exists.',
@@ -230,6 +238,7 @@ return [
         'copy' => 'Copy',
         'track' => 'Track',
         'select' => 'Select',
+        'apply' => 'Apply',
     ],
 
     // Meta Tags & SEO
