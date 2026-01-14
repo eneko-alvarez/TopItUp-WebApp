@@ -3,10 +3,10 @@
 define('DEVELOPMENT_MODE', true); // Change to false when deploying to production
 
 // Database configuration
-$host = 'sql100.infinityfree.com';
-$dbname = 'if0_40697566_topituip';
-$username = 'if0_40697566';
-$password = 'gcoPJgXrZ0cX';
+$host = 'bu1h1d02lfvrdpfmi5rw-mysql.services.clever-cloud.com';
+$dbname = 'bu1h1d02lfvrdpfmi5rw';
+$username = 'u2r1z0uev8a5vzpn';
+$password = 'RNzVZHNRQSGBTXlYedOa';
 
 try {
     $pdo = new PDO(
