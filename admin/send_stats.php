@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require_once "config.php"; // Configura $host, $dbname, $username, $password, $brevoApiKey
+require_once "../config.php"; // Configura $host, $dbname, $username, $password, $brevoApiKey
 $apiKey = $brevoApiKey; // Use API key from config
 
 

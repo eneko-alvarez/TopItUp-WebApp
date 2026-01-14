@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "config.php";
+require_once "../config.php";
 
 // Verify user is logged in using the correct session variable name
 // First check if there's an active PHP session
