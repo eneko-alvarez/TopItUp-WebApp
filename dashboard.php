@@ -13,6 +13,32 @@ if (!in_array($page, $allowed_pages)) {
     $page = 'dashboard';
 }
 
+// ============================================
+// AUTO-SEND STATS: First access of the month
+// ============================================
+// Instead of only the 1st, send on first access of ANY day in a new month
+$sendLogFile = __DIR__ . '/admin/.stats_send_log';
+$currentMonth = date('Y-m'); // Format: 2026-02
+$lastSendMonth = null;
+
+if (file_exists($sendLogFile)) {
+    $lastSendMonth = file_get_contents($sendLogFile);
+}
+
+// If this month hasn't sent yet, trigger async send
+if ($lastSendMonth !== $currentMonth) {
+    // Use a non-blocking CURL request to trigger send_stats.php
+    $url = "https://" . $_SERVER['HTTP_HOST'] . "/admin/send_stats.php?auto=1";
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 1); // Quick timeout, don't wait
+    curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+    @curl_exec($ch);
+    curl_close($ch);
+}
+// ============================================
+
 $firstLogin = 0;
 $tourStep = isset($_GET['tour_step']) ? (int)$_GET['tour_step'] : 0;
 

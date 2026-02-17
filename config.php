@@ -1,8 +1,9 @@
 <?php
-// Development Mode (set to false in production)
+// Development Mode (set to false in production) ?standalone=true
 define('DEVELOPMENT_MODE', true); // Change to false when deploying to production
 
 // Database configuration
+
 $host = 'sql100.infinityfree.com';
 $dbname = 'if0_40697566_topituip';
 $username = 'if0_40697566';
@@ -14,6 +15,7 @@ $dbname = 'bu1h1d02lfvrdpfmi5rw';
 $username = 'u2r1z0uev8a5vzpn';
 $password = 'RNzVZHNRQSGBTXlYedOa';
 */
+
 
 
 // Brevo API configuration

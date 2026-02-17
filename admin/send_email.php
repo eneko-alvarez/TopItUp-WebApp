@@ -327,7 +327,7 @@ $recipientCount = $recipientCountQuery->fetch()['count'];
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-link">← Volver</a>
+        <a href="./" class="back-link">← Volver</a>
         
         <h1>Envío Manual de Correos</h1>
         <p class="subtitle">Envía un mensaje a todos los usuarios registrados</p>

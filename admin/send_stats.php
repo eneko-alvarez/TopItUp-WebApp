@@ -1,18 +1,35 @@
 <?php
+session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require_once "../config.php"; // Configura $host, $dbname, $username, $password, $brevoApiKey
 $apiKey = $brevoApiKey; // Use API key from config
 
+// Verify user is logged in and is 'eneko'
+// Allow auto-trigger from dashboard without session verification
+$isAutomatic = isset($_GET['auto']) && $_GET['auto'] === '1';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-} catch (Exception $e) {
-    die('Error conexión DB: ' . $e->getMessage());
+$loggedIn = false;
+$username = null;
+
+if (isset($_SESSION['userid'])) {
+    $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['userid']]);
+    $user = $stmt->fetch();
+    if ($user) {
+        $loggedIn = true;
+        $username = $user['username'];
+    }
 }
+
+// If not automatic trigger and not logged in as 'eneko', deny access
+if (!$isAutomatic && (!$loggedIn || $username !== 'eneko')) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// $pdo already initialized from config.php with correct DB credentials
 
 
 // Traducción manual de meses para evitar deprecated strftime
@@ -30,8 +47,26 @@ $ultimo_dia_mes_pasado = date('Y-m-t', strtotime('last month'));
 
 
 // Obtener todos los usuarios con email y nombre
-$usuariosQuery = $pdo->query("SELECT id, email, username FROM users");
+// TEMPORAL: Solo enviar a eneko.alvarez@opendeusto.es para testing
+// TODO: Cambiar back a todos los usuarios después de pruebas
+// testingMode puede venir desde POST (manual_overview.php) o default a false
+$testingMode = isset($_POST['testingMode']) ? ($_POST['testingMode'] === 'true' || $_POST['testingMode'] === '1') : false;
+
+if ($testingMode) {
+    $usuariosQuery = $pdo->query("SELECT id, email, username FROM users WHERE email = 'eneko.alvarez@opendeusto.es'");
+} else {
+    $usuariosQuery = $pdo->query("SELECT id, email, username FROM users");
+}
 $usuarios = $usuariosQuery->fetchAll(PDO::FETCH_ASSOC);
+
+// If no testing user found, create feedback
+if (empty($usuarios) && $testingMode) {
+    echo "<div style='background: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 20px; border-radius: 5px;'>";
+    echo "<strong>⚠️ Modo Testing Activado</strong><br>";
+    echo "No se encontró usuario con correo: eneko.alvarez@opendeusto.es<br>";
+    echo "Por favor, verifica que el usuario existe o cambiar el correo en send_stats.php línea 45.";
+    echo "</div>";
+}
 
 
 // Función para enviar email con Brevo (ya definida en pasos anteriores)
@@ -170,7 +205,7 @@ foreach ($usuarios as $user) {
     }
 
 
-    $html .= "<p>El siguiente mes se parte más, espero (es amenaza, si). Gracias :)</p>";
+    $html .= "<p>Si alguien tiene idea de cómo mejorar estas estadísticas; <a href='mailto:admin@topitup.party'>admin@topitup.party</a>, gracias :)</p>";
 
 
     $subject = "Tus estadísticas de $nombre_mes - TopItUp";
@@ -192,5 +227,14 @@ foreach ($usuarios as $user) {
     } else {
         echo "<p style='color:orange;'>Respuesta inesperada: <pre>" . print_r($resultadoEnvio, true) . "</pre></p>";
     }
+}
+
+// Record the send month to prevent duplicate sends this month
+$sendLogFile = __DIR__ . '/.stats_send_log';
+file_put_contents($sendLogFile, date('Y-m')); // Format: 2026-02
+
+// If this was an automatic call, suppress output
+if ($isAutomatic) {
+    exit;
 }
 ?>
