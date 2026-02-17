@@ -16,9 +16,9 @@ function getGroupCounters($pdo, $group_id, $filter_year = null) {
     }
     
     $stmt = $pdo->prepare("
-        SELECT c.id, c.name, c.color, c.user_id, c.is_public, c.created_at,
+        SELECT c.id, c.name, c.color, c.user_id, c.is_public, c.created_at, c.type,
                gc.id AS group_counter_id,
-               (SELECT COUNT(*) FROM counter_logs WHERE counter_id = c.id AND YEAR(date) = ?) as count
+               (SELECT COALESCE(SUM(number), 0) FROM counter_logs WHERE counter_id = c.id AND YEAR(date) = ?) as count
         FROM counters c 
         JOIN group_counters gc ON c.id = gc.counter_id 
         WHERE gc.group_id = ? 
@@ -34,7 +34,7 @@ function getGroupTotal($pdo, $group_id, $filter_year = null) {
     }
     
     $stmt = $pdo->prepare("
-        SELECT COUNT(*) AS total 
+        SELECT COALESCE(SUM(cl.number), 0) AS total 
         FROM counter_logs cl
         JOIN group_counters gc ON cl.counter_id = gc.counter_id 
         WHERE gc.group_id = ? AND YEAR(cl.date) = ?
@@ -60,8 +60,8 @@ function getUnassignedCounters($pdo, $user_id, $filter_year = null) {
     }
     
     $stmt = $pdo->prepare("
-        SELECT c.id, c.name, c.color, c.user_id, c.is_public, c.created_at,
-               (SELECT COUNT(*) FROM counter_logs WHERE counter_id = c.id AND YEAR(date) = ?) as count
+        SELECT c.id, c.name, c.color, c.user_id, c.is_public, c.created_at, c.type,
+               (SELECT COALESCE(SUM(number), 0) FROM counter_logs WHERE counter_id = c.id AND YEAR(date) = ?) as count
         FROM counters c 
         WHERE c.user_id = ? 
         AND c.id NOT IN (SELECT counter_id FROM group_counters) 

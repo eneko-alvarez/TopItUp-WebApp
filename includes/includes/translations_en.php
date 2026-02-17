@@ -96,7 +96,7 @@ return [
             'color' => 'Color',
             'type' => 'Counter Type',
             'type_classic' => 'Classic (+1)',
-            'type_custom' => 'Custom (+whatever_you_want)',
+            'type_custom' => 'Custom (Variable)',
             'submit' => 'Create Counter',
         ],
         'create_group' => [
@@ -120,14 +120,6 @@ return [
             'count' => 'Count',
             'view' => 'View',
             'unassigned' => 'Unassigned',
-        ],
-        'year_filter' => [
-            'title' => 'Data Year Filter',
-            'label' => 'Select Year',
-            'description' => 'Filter counter data by year. Only complete years with records are available.',
-            'cookie_info' => 'Your selection will expire after 10 minutes of inactivity and reset to the current year.',
-            'current' => 'Current',
-            'apply' => 'Apply Filter',
         ],
         'errors' => [
             'counter_exists' => 'A counter with that name already exists.',
@@ -244,7 +236,6 @@ return [
         'copy' => 'Copy',
         'track' => 'Track',
         'select' => 'Select',
-        'apply' => 'Apply',
     ],
 
     // Meta Tags & SEO

@@ -96,7 +96,7 @@ return [
             'color' => 'Color',
             'type' => 'Tipo de Contador',
             'type_classic' => 'Clásico (+1)',
-            'type_custom' => 'Libre (+lo_que_quieras)',
+            'type_custom' => 'Personalizado (Variable)',
             'submit' => 'Crear Contador',
         ],
         'create_group' => [
@@ -120,14 +120,6 @@ return [
             'count' => 'Cuenta',
             'view' => 'Ver',
             'unassigned' => 'Sin asignar',
-        ],
-        'year_filter' => [
-            'title' => 'Historial de Año',
-            'label' => 'Seleccionar Año',
-            'description' => 'Selecciona cualquier año anterior para ver su historial en tus contadores.',
-            'cookie_info' => 'Esta selección es algo temporal, tan solo para ver el historial. En unos minutos volverá al año actual.',
-            'current' => 'Actual',
-            'apply' => 'Aplicar Filtro',
         ],
         'errors' => [
             'counter_exists' => 'Ya existe un contador con ese nombre.',
@@ -244,7 +236,6 @@ return [
         'copy' => 'Copiar',
         'track' => 'Rastrear',
         'select' => 'Seleccionar',
-        'apply' => 'Aplicar',
     ],
 
     // Meta Tags & SEO

@@ -72,24 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         header('Location: dashboard.php?page=settings');
         exit;
     }
-    
-    if ($action === 'update_filter_year') {
-        $new_year = (int)($_POST['filter_year'] ?? date('Y'));
-        
-        // Set cookie with 10 minute expiration
-        setcookie('filter_year', $new_year, [
-            'expires' => time() + 600, // 10 minutes
-            'path' => '/',
-            'samesite' => 'Lax'
-        ]);
-        
-        // Update $_COOKIE for current request so it reflects immediately
-        $_COOKIE['filter_year'] = $new_year;
-        
-        // Redirect to dashboard to see filtered data
-        header('Location: dashboard.php');
-        exit;
-    }
 }
 
 $groups = getUserGroups($pdo, $user_id);
@@ -145,8 +127,6 @@ foreach ($groups as $group) {
             <button type="submit" class="btn-primary"><?= t('settings.create_group.submit') ?></button>
         </form>
     </div>
-    
-    
     
     <div class="settings-section">
         <h3><i class="fas fa-tasks"></i> <?= t('settings.my_groups.title') ?></h3>
@@ -268,40 +248,6 @@ foreach ($groups as $group) {
         <?php endif; ?>
     </div>
     
-    <div class="settings-section">
-        <h3><i class="fas fa-calendar-alt"></i> <?= t('settings.year_filter.title') ?></h3>
-        <p class="help-text"><?= t('settings.year_filter.description') ?></p>
-        <form method="POST" class="settings-form">
-            <input type="hidden" name="action" value="update_filter_year">
-            <div class="form-group">
-                <label for="filter_year"><?= t('settings.year_filter.label') ?></label>
-                <select id="filter_year" name="filter_year" class="year-selector" required style="width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 15px; background: white; color: #000; appearance: auto;">
-                    <?php 
-                    $available_years = getAvailableYears($pdo, $user_id);
-                    $current_filter = getUserFilterYear();
-                    
-                    // Ensure at least current year is available
-                    if (empty($available_years)) {
-                        $available_years = [(int)date('Y')];
-                    }
-                    
-                    foreach ($available_years as $year): 
-                    ?>
-                        <option value="<?= $year ?>" <?= $year == $current_filter ? 'selected' : '' ?> style="color: #000; background: white;">
-                            <?= $year ?> <?= $year == date('Y') ? '(' . t('settings.year_filter.current') . ')' : '' ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <button type="submit" class="btn-primary">
-                <i class="fas fa-filter"></i> <?= t('settings.year_filter.apply') ?>
-            </button>
-        </form>
-        <p class="help-text" style="margin-top: 1rem; color: #999; font-size: 0.9rem;">
-            <i class="fas fa-info-circle"></i> <?= t('settings.year_filter.cookie_info') ?>
-        </p>
-    </div>
-
     <div class="settings-section">
         <div class="logout-container">
             <p>User: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></p>
