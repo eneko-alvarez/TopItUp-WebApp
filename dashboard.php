@@ -7,7 +7,7 @@ require 'check_session.php';
 
 $user_id = $_SESSION['userid'];
 $page = $_GET['page'] ?? 'dashboard';
-$allowed_pages = ['dashboard', 'increment', 'leaderboard', 'leaderboard_view', 'leaderboard_settings', 'settings'];
+$allowed_pages = ['dashboard', 'increment', 'leaderboard', 'leaderboard_view', 'leaderboard_settings', 'settings', 'calendar'];
 
 if (!in_array($page, $allowed_pages)) {
     $page = 'dashboard';
@@ -60,7 +60,7 @@ try {
     <title><?= t('dashboard.title') ?></title>
     <link rel="icon" type="image/png" href="files/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="style.css?v=1.3.1">
+    <link rel="stylesheet" type="text/css" href="style.css?v=1.3.7">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -130,6 +130,9 @@ try {
                 <a href="?page=dashboard" class="<?= $page === 'dashboard' ? 'active' : '' ?>" id="nav-dashboard">
                     <i class="fas fa-home"></i> <?= t('nav.dashboard') ?>
                 </a>
+                <a href="?page=calendar" class="<?= $page === 'calendar' ? 'active' : '' ?>" id="nav-calendar">
+                    <i class="fas fa-calendar-alt"></i> <?= t('nav.calendar') ?>
+                </a>
                 <a href="?page=settings" class="<?= $page === 'settings' ? 'active' : '' ?>" id="nav-settings">
                     <i class="fas fa-cog"></i> <?= t('nav.settings') ?>
                 </a>
@@ -154,6 +157,10 @@ try {
             <a href="?page=dashboard" class="<?= $page === 'dashboard' ? 'active' : '' ?>" id="mobile-nav-dashboard">
                 <i class="fas fa-home"></i>
                 <?= t('nav.dashboard') ?>
+            </a>
+            <a href="?page=calendar" class="<?= $page === 'calendar' ? 'active' : '' ?>" id="mobile-nav-calendar">
+                <i class="fas fa-calendar-alt"></i>
+                <?= t('nav.calendar') ?>
             </a>
             <a href="?page=settings" class="<?= $page === 'settings' ? 'active' : '' ?>" id="mobile-nav-settings">
                 <i class="fas fa-cog"></i>

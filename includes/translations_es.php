@@ -70,6 +70,7 @@ return [
         'leaderboard' => 'Clasificación',
         'settings' => 'Ajustes',
         'logout' => 'Salir',
+        'calendar' => 'Calendario',
     ],
 
     // Dashboard
@@ -226,6 +227,17 @@ return [
             'left' => 'Has abandonado el leaderboard.',
             'deleted' => 'Leaderboard eliminado con éxito.',
         ],
+    ],
+
+    // Calendar
+    'calendar' => [
+        'title'       => 'Calendario',
+        'prev_month'  => 'Mes anterior',
+        'next_month'  => 'Mes siguiente',
+        'counters'    => 'Contadores',
+        'filter'      => 'Filtrar contadores',
+        'no_counters' => 'Sin contadores',
+        'no_records'  => 'Sin registros este mes',
     ],
 
     // Common

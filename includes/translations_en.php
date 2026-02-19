@@ -70,6 +70,7 @@ return [
         'leaderboard' => 'Leaderboard',
         'settings' => 'Settings',
         'logout' => 'Logout',
+        'calendar' => 'Calendar',
     ],
 
     // Dashboard
@@ -226,6 +227,17 @@ return [
             'left' => 'You have left the leaderboard.',
             'deleted' => 'Leaderboard deleted successfully.',
         ],
+    ],
+
+    // Calendar
+    'calendar' => [
+        'title'       => 'Calendar',
+        'prev_month'  => 'Previous month',
+        'next_month'  => 'Next month',
+        'counters'    => 'Counters',
+        'filter'      => 'Filter counters',
+        'no_counters' => 'No counters',
+        'no_records'  => 'No records this month',
     ],
 
     // Common
