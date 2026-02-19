@@ -113,6 +113,52 @@ try {
     </style>
 </head>
 <body <?= $firstLogin == 1 ? 'class="tour-active"' : '' ?>>
+    <!-- PWA Custom Splash Screen (Instagram style) -->
+    <style>
+        #pwa-splash {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            z-index: 9999999;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.4s ease-out;
+        }
+        @media (display-mode: standalone) {
+            #pwa-splash {
+                display: flex;
+            }
+        }
+        .splash-logo {
+            width: 120px;
+            height: auto;
+            animation: pulse-splash 1.5s infinite alternate;
+        }
+        @keyframes pulse-splash {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+    </style>
+    <div id="pwa-splash">
+        <img src="files/full_logo.png?v=1.1" class="splash-logo" alt="TopItUp">
+    </div>
+    <script>
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const splash = document.getElementById('pwa-splash');
+                    if (splash) {
+                        splash.style.opacity = '0';
+                        setTimeout(() => splash.remove(), 400);
+                    }
+                }, 800);
+            });
+        }
+    </script>
     <div id="pageLoader" class="page-loader">
         <div class="loader-spinner"></div>
     </div>
