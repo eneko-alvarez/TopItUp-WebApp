@@ -566,7 +566,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     <!-- PWA Custom Splash Screen (Instagram style) -->
     <style>
         #pwa-splash {
-            display: none;
+            display: none; /* Hidden by default until JS confirms first launch */
             position: fixed;
             top: 0;
             left: 0;
@@ -577,11 +577,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
             justify-content: center;
             align-items: center;
             transition: opacity 0.4s ease-out;
-        }
-        @media (display-mode: standalone) {
-            #pwa-splash {
-                display: flex;
-            }
         }
         .splash-logo {
             width: 120px;
@@ -597,16 +592,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <img src="files/full_logo.png?v=1.1" class="splash-logo" alt="TopItUp">
     </div>
     <script>
-        if (window.matchMedia('(display-mode: standalone)').matches) {
+        if (window.matchMedia('(display-mode: standalone)').matches && !sessionStorage.getItem('pwaSplashShown')) {
+            document.getElementById('pwa-splash').style.display = 'flex';
             window.addEventListener('load', () => {
                 setTimeout(() => {
                     const splash = document.getElementById('pwa-splash');
                     if (splash) {
                         splash.style.opacity = '0';
-                        setTimeout(() => splash.remove(), 400);
+                        setTimeout(() => {
+                            splash.remove();
+                            sessionStorage.setItem('pwaSplashShown', 'true');
+                        }, 400);
                     }
                 }, 800);
             });
+        } else {
+            const splash = document.getElementById('pwa-splash');
+            if (splash) splash.remove();
         }
     </script>
 
