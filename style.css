@@ -219,6 +219,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.group-card:not(.collapsed) .group-header {
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 2px solid #2a2a2a;
@@ -234,6 +237,24 @@ body {
     font-size: 22px;
     font-weight: 700;
     color: #ffffff;
+}
+
+.group-toggle-icon {
+    font-size: 14px;
+    /* Slightly smaller */
+    color: #666666;
+    /* More gray */
+    transition: transform 0.3s ease, color 0.2s ease, background 0.2s ease;
+    padding: 6px;
+    border-radius: 50%;
+    margin-right: 4px;
+    /* Space between icon and text */
+}
+
+.group-toggle-icon:hover {
+    color: #999999;
+    background: rgba(255, 255, 255, 0.05);
+    /* Softer hover */
 }
 
 .group-total {

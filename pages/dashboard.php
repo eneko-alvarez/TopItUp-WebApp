@@ -63,46 +63,50 @@ $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php else: ?>
         <div class="groups-grid">
             <?php foreach ($groupsData as $group): ?>
-                <div class="group-card clickable-card"
+                <div class="group-card clickable-card <?= $group['is_public'] == 0 ? 'collapsed' : '' ?>"
+                     id="groupCard<?= $group['id'] ?>"
                      data-url="?page=increment&group_id=<?= $group['id'] ?>"
                      style="border-left-color: <?= htmlspecialchars($group['color']) ?>">
                     <div class="group-header">
                         <div class="group-name-container">
+                            <i class="fas fa-chevron-<?= $group['is_public'] == 0 ? 'down' : 'up' ?> group-toggle-icon" 
+                               onclick="toggleGroup(event, <?= $group['id'] ?>, this)"></i>
                             <div class="group-name"><?= htmlspecialchars($group['name']) ?></div>
-                            <span class="privacy-tag <?= $group['is_public'] ? 'public' : 'private' ?>"></span>
                         </div>
                         <div class="group-total" style="color: <?= htmlspecialchars($group['color']) ?>">
                             <?= $group['total'] ?>
                         </div>
                     </div>
 
-                    <?php if (!empty($group['counters'])): ?>
-                        <div class="group-breakdown">
-                            <?php foreach ($group['counters'] as $counter): ?>
-                                <div class="counter-breakdown-item">
-                                    <div class="counter-breakdown-info">
-                                        <span class="counter-breakdown-name"><?= htmlspecialchars($counter['name']) ?></span>
-                                        <span class="counter-breakdown-value">
-                                            <?= $counter['count'] ?> 
-                                            <span style="color: #999;">(<?= $counter['percentage'] ?>%)</span>
-                                        </span>
-                                    </div>
-                                    <div class="counter-breakdown-bar">
-                                        <div class="counter-breakdown-fill"
-                                             style="width: <?= $counter['percentage'] ?>%; background: <?= htmlspecialchars($counter['color']) ?>">
+                    <div class="group-content" id="groupContent<?= $group['id'] ?>" style="display: <?= $group['is_public'] == 0 ? 'none' : 'block' ?>;">
+                        <?php if (!empty($group['counters'])): ?>
+                            <div class="group-breakdown">
+                                <?php foreach ($group['counters'] as $counter): ?>
+                                    <div class="counter-breakdown-item">
+                                        <div class="counter-breakdown-info">
+                                            <span class="counter-breakdown-name"><?= htmlspecialchars($counter['name']) ?></span>
+                                            <span class="counter-breakdown-value">
+                                                <?= $counter['count'] ?> 
+                                                <span style="color: #999;">(<?= $counter['percentage'] ?>%)</span>
+                                            </span>
+                                        </div>
+                                        <div class="counter-breakdown-bar">
+                                            <div class="counter-breakdown-fill"
+                                                 style="width: <?= $counter['percentage'] ?>%; background: <?= htmlspecialchars($counter['color']) ?>">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <p class="empty-group-message"><?= t('dashboard.no_counters_assigned') ?></p>
-                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="empty-group-message"><?= t('dashboard.no_counters_assigned') ?></p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
 
             <?php foreach ($unassignedCounters as $counter): ?>
-                <div class="group-card clickable-card"
+                <div class="group-card clickable-card collapsed"
                      data-url="?page=increment&counter_id=<?= $counter['id'] ?>"
                      style="border-left-color: <?= htmlspecialchars($counter['color']) ?>">
                     <div class="group-header">
@@ -146,6 +150,44 @@ $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <script>
+function toggleGroup(event, groupId, iconElement) {
+    event.stopPropagation();
+    
+    const card = document.getElementById('groupCard' + groupId);
+    const content = document.getElementById('groupContent' + groupId);
+    const isExpanded = content.style.display !== 'none';
+    
+    if (isExpanded) {
+        content.style.display = 'none';
+        iconElement.classList.remove('fa-chevron-up');
+        iconElement.classList.add('fa-chevron-down');
+        card.classList.add('collapsed');
+    } else {
+        content.style.display = 'block';
+        iconElement.classList.remove('fa-chevron-down');
+        iconElement.classList.add('fa-chevron-up');
+        card.classList.remove('collapsed');
+    }
+    
+    fetch('ajax_toggle_group.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            group_id: groupId,
+            is_expanded: !isExpanded
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.error('Failed to toggle group:', data.error);
+        }
+    })
+    .catch(error => console.error('Error toggling group:', error));
+}
+
 function toggleHistory() {
     const content = document.getElementById('historyContent');
     const icon = document.getElementById('historyToggleIcon');

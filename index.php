@@ -563,10 +563,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
     </style>
 </head>
 <body>
+    <?php if (!isset($_COOKIE['pwaSplash'])): ?>
     <!-- PWA Custom Splash Screen (Instagram style) -->
     <style>
         #pwa-splash {
-            display: none; /* Hidden by default until JS confirms first launch */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -592,7 +593,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
         <img src="files/full_logo.png?v=1.1" class="splash-logo" alt="TopItUp">
     </div>
     <script>
-        if (window.matchMedia('(display-mode: standalone)').matches && !sessionStorage.getItem('pwaSplashShown')) {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
             document.getElementById('pwa-splash').style.display = 'flex';
             window.addEventListener('load', () => {
                 setTimeout(() => {
@@ -601,16 +602,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login
                         splash.style.opacity = '0';
                         setTimeout(() => {
                             splash.remove();
-                            sessionStorage.setItem('pwaSplashShown', 'true');
+                            document.cookie = "pwaSplash=true; path=/";
                         }, 400);
                     }
                 }, 800);
             });
-        } else {
-            const splash = document.getElementById('pwa-splash');
-            if (splash) splash.remove();
         }
     </script>
+    <?php endif; ?>
 
     <!-- Language Switcher (visible on both landing and app) -->
     <div class="lang-switcher" id="langSwitcher">
