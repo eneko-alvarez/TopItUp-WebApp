@@ -1,26 +1,26 @@
 <?php
 // Development Mode (set to false in production) ?standalone=true
-define('DEVELOPMENT_MODE', true); // Change to false when deploying to production
+define('DEVELOPMENT_MODE', true); 
+
+//**** TODAS LAS CLAVES E INFORMACIÓN SENSIBLE HA CADUCADO Y NO ES VALIDA ****
 
 // Database configuration
 /*
 $host = 'sql100.infinityfree.com';
 $dbname = 'if0_40697566_topituip';
 $username = 'if0_40697566';
-$password = 'gcoPJgXrZ0cX';
+$password = '**************';
 */
-
-
 
 //esta es la dummy
 $host = 'bu1h1d02lfvrdpfmi5rw-mysql.services.clever-cloud.com';
 $dbname = 'bu1h1d02lfvrdpfmi5rw';
 $username = 'u2r1z0uev8a5vzpn';
-$password = 'RNzVZHNRQSGBTXlYedOa';
+$password = '***************';
 
 
 // Brevo API configuration
-$brevoApiKey = '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';
+$brevoApiKey = 'xkeysib-b663c3b5e9767f7914d*****************************************************';
 
 // Push notifications (VAPID) keys - generate your own with web-push library or tool
 // You can leave the private key unused during frontend tests, but it will be
