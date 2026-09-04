@@ -6,7 +6,7 @@ define('DEVELOPMENT_MODE', true); // Change to false when deploying to productio
 $host = 'bu1h1d02lfvrdpfmi5rw-mysql.services.clever-cloud.com';
 $dbname = 'bu1h1d02lfvrdpfmi5rw';
 $username = 'u2r1z0uev8a5vzpn';
-$password = 'RNzVZHNRQSGBTXlYedOa';
+$password = '******************';
 
 try {
     $pdo = new PDO(
